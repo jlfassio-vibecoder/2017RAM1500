@@ -35,6 +35,7 @@ interface TruckDetails {
   mileage: string;
   price: string;
   windowStickerUrl?: string;
+  carfaxReportUrl?: string;
 }
 
 export default function SellerDashboard() {
@@ -53,6 +54,7 @@ export default function SellerDashboard() {
   const [truckDetails, setTruckDetails] = useState<TruckDetails>({ mileage: '', price: '' });
   const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const carfaxInputRef = useRef<HTMLInputElement>(null);
 
   const socketRef = useRef<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -70,6 +72,23 @@ export default function SellerDashboard() {
     reader.onload = (event) => {
       const base64String = event.target?.result as string;
       setTruckDetails(prev => ({ ...prev, windowStickerUrl: base64String }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCarfaxUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("File size exceeds 5MB limit.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64String = event.target?.result as string;
+      setTruckDetails(prev => ({ ...prev, carfaxReportUrl: base64String }));
     };
     reader.readAsDataURL(file);
   };
@@ -511,7 +530,7 @@ export default function SellerDashboard() {
                           reader.readAsDataURL(file);
                         }
                       }}
-                      className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center flex flex-col items-center hover:bg-slate-50 transition-colors cursor-pointer group"
+                      className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center flex flex-col items-center hover:bg-slate-50 transition-colors cursor-pointer group mb-6"
                     >
                       {truckDetails.windowStickerUrl ? (
                         <div className="flex flex-col items-center">
@@ -525,6 +544,54 @@ export default function SellerDashboard() {
                             <Upload size={20} className="text-slate-500" />
                           </div>
                           <p className="text-sm font-medium text-slate-900 mb-1">Click or drag to upload original window sticker</p>
+                          <p className="text-xs text-slate-500">PDF, PNG, or JPG (max. 5MB)</p>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Carfax Report</label>
+                    <input
+                      type="file"
+                      ref={carfaxInputRef}
+                      onChange={handleCarfaxUpload}
+                      className="hidden"
+                      accept=".pdf,image/png,image/jpeg"
+                    />
+                    <div 
+                      onClick={() => carfaxInputRef.current?.click()}
+                      onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                          const file = e.dataTransfer.files[0];
+                          if (file.size > 5 * 1024 * 1024) {
+                            alert("File size exceeds 5MB limit.");
+                            return;
+                          }
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            setTruckDetails(prev => ({ ...prev, carfaxReportUrl: event.target?.result as string }));
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center flex flex-col items-center hover:bg-slate-50 transition-colors cursor-pointer group"
+                    >
+                      {truckDetails.carfaxReportUrl ? (
+                        <div className="flex flex-col items-center">
+                          <CheckCircle2 size={32} className="text-green-500 mb-3" />
+                          <p className="text-sm font-medium text-slate-900 mb-1">Carfax Report uploaded</p>
+                          <p className="text-xs text-slate-500">Click or drag here to change report</p>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="bg-white p-3 rounded-full shadow-sm mb-3 group-hover:scale-110 transition-transform">
+                            <Upload size={20} className="text-slate-500" />
+                          </div>
+                          <p className="text-sm font-medium text-slate-900 mb-1">Click or drag to upload Carfax Report</p>
                           <p className="text-xs text-slate-500">PDF, PNG, or JPG (max. 5MB)</p>
                         </>
                       )}

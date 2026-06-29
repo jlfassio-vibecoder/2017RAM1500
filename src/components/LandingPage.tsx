@@ -15,7 +15,7 @@ const marketData = [
 
 export default function LandingPage() {
   const [activeSection, setActiveSection] = useState('overview');
-  const [truckDetails, setTruckDetails] = useState({ mileage: '78,000', price: '23,900', windowStickerUrl: '' });
+  const [truckDetails, setTruckDetails] = useState({ mileage: '78,000', price: '23,900', windowStickerUrl: '', carfaxReportUrl: '' });
 
   useEffect(() => {
     fetch('/api/truck-details')
@@ -58,7 +58,7 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="hidden md:flex items-center space-x-8 text-sm font-medium">
-              {['overview', 'pitch', 'gallery', 'maintenance', 'market', 'features', 'build-sheet', 'contact'].map((section) => (
+              {['overview', 'pitch', 'gallery', 'maintenance', 'market', 'features', 'build-sheet', 'carfax', 'contact'].map((section) => (
                 <button
                   key={section}
                   onClick={() => scrollToSection(section)}
@@ -68,7 +68,7 @@ export default function LandingPage() {
                       : 'border-transparent text-slate-400 hover:text-white hover:border-slate-600'
                   }`}
                 >
-                  {section === 'pitch' ? 'Sales Pitch' : section === 'features' ? 'Utility' : section === 'market' ? 'Market Value' : section === 'build-sheet' ? 'Build Sheet' : section === 'contact' ? 'Contact' : section}
+                  {section === 'pitch' ? "Seller's Note" : section === 'features' ? 'Utility' : section === 'market' ? 'Market Value' : section === 'build-sheet' ? 'Build Sheet' : section === 'contact' ? 'Contact' : section}
                 </button>
               ))}
             </div>
@@ -500,7 +500,7 @@ export default function LandingPage() {
         <ContactForm />
 
         {/* Condition Report */}
-        <section className="bg-white border border-slate-200 rounded-xl p-6 mb-16 shadow-sm">
+        <section className="bg-white border border-slate-200 rounded-xl p-6 mb-8 shadow-sm">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
               <h2 className="text-sm font-bold text-slate-900 mb-1">Aesthetic Restoration</h2>
@@ -510,6 +510,44 @@ export default function LandingPage() {
               <div className="px-3 py-1.5 bg-slate-50 rounded text-xs font-semibold border border-slate-200 text-slate-700">✓ No Accidents</div>
               <div className="px-3 py-1.5 bg-slate-50 rounded text-xs font-semibold border border-slate-200 text-slate-700">✓ Clean Title</div>
             </div>
+          </div>
+        </section>
+
+        {/* Carfax Report Document Viewer */}
+        <section id="carfax" className="bg-white border border-slate-200 rounded-xl p-8 mb-16 shadow-sm">
+          <div className="flex justify-between items-end mb-8">
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900 mb-2">Carfax Report</h2>
+              <p className="text-slate-500 text-sm">Detailed vehicle history and condition report.</p>
+            </div>
+          </div>
+
+          <div className="border border-slate-100 rounded-xl bg-white p-6 shadow-sm">
+            {truckDetails.carfaxReportUrl ? (
+              <div className="rounded-xl overflow-hidden shadow-sm border border-slate-200">
+                {truckDetails.carfaxReportUrl.startsWith('data:application/pdf') ? (
+                  <iframe 
+                    src={truckDetails.carfaxReportUrl} 
+                    title="Carfax Report"
+                    className="w-full h-[600px] bg-white border-0"
+                  />
+                ) : (
+                  <img 
+                    src={truckDetails.carfaxReportUrl} 
+                    alt="Carfax Report" 
+                    className="w-full h-auto object-contain bg-white"
+                  />
+                )}
+              </div>
+            ) : (
+              <div className="bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-8 text-center flex flex-col items-center justify-center">
+                <div className="bg-white p-4 rounded-full shadow-sm mb-4">
+                  <FileText size={32} className="text-slate-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-700 mb-1">Carfax Report</h3>
+                <p className="text-slate-500 text-sm mb-4">The Carfax Report will be displayed here once uploaded.</p>
+              </div>
+            )}
           </div>
         </section>
 

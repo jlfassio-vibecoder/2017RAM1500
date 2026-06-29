@@ -13,6 +13,7 @@ export const truckDetails = pgTable('truck_details', {
   mileage: text('mileage').notNull(),
   price: text('price').notNull(),
   windowStickerUrl: text('window_sticker_url'),
+  carfaxReportUrl: text('carfax_report_url'),
 });
 
 export const inquiries = pgTable('inquiries', {
