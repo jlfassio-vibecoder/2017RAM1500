@@ -117,54 +117,118 @@ export default function LandingPage() {
 
         {/* Sales Pitch Section */}
         <section id="pitch" className="mb-16 pt-8">
-          <div className="bg-white border border-slate-200 rounded-2xl p-8 md:p-10 shadow-sm">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">Seller's Note</h2>
-            <div className="prose prose-slate max-w-none space-y-4 text-slate-700 leading-relaxed text-sm md:text-base">
-              <p className="font-semibold text-lg text-slate-900">2017 Ram 1500 Crew Cab Night Edition 4x4 – Fully Loaded, Zero Codes, Bulletproofed Suspension</p>
+          <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+            {/* Header Area */}
+            <div className="bg-slate-900 text-white p-8 md:p-10">
+              <h2 className="text-2xl md:text-3xl font-bold mb-4">Seller's Note</h2>
+              <p className="font-semibold text-lg md:text-xl text-slate-300 leading-snug max-w-3xl">
+                2017 Ram 1500 Crew Cab Night Edition 4x4 – Fully Loaded, Zero Codes, Bulletproofed Suspension
+              </p>
               
-              <ul className="font-medium text-slate-800 list-none p-0 space-y-1">
-                <li>Asking Price: ${truckDetails.price}</li>
-                <li>Mileage: {truckDetails.mileage}</li>
-                <li>Original MSRP: $59,895 (See Window Sticker)</li>
-              </ul>
-              
-              <p>If you are looking for a fully-loaded, turn-key truck that has already had all the expensive, common Ram maintenance issues taken care of, this is it.</p>
-              <p>This is a rare Flame Red Night Edition with almost $16,000 in factory upgrades. It has been meticulously cared for, mechanically vetted, and is ready for its next owner.</p>
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 mt-6">
+                <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 backdrop-blur-sm">
+                  <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">Asking Price</p>
+                  <p className="text-2xl font-bold text-white">${truckDetails.price}</p>
+                </div>
+                <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 backdrop-blur-sm">
+                  <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">Mileage</p>
+                  <p className="text-2xl font-bold text-white">{truckDetails.mileage}</p>
+                </div>
+                <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 backdrop-blur-sm">
+                  <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">Original MSRP</p>
+                  <p className="text-2xl font-bold text-slate-300">$59,895</p>
+                </div>
+              </div>
+            </div>
 
-              <h3 className="text-lg font-bold text-slate-900 mt-8 mb-2">🛡️ THE PEACE OF MIND GUARANTEE</h3>
-              <p>Let's talk about the elephant in the room with 4th Gen Rams: the factory air suspension. It's notorious for failing and costing thousands to fix. I have already paid to have the factory air ride professionally deleted and converted to a premium conventional coil/shock suspension. You get the perfect ride height with zero anxiety about winter suspension failures.</p>
-              <p>Additionally, this truck was just evaluated by a major commercial truck buying center. It was thoroughly test-driven and throws ZERO diagnostic codes.</p>
+            {/* Content Area */}
+            <div className="p-8 md:p-10">
+              <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed text-sm md:text-base">
+                <div className="mb-10 text-lg text-slate-800 space-y-4">
+                  <p>If you are looking for a fully-loaded, turn-key truck that has already had all the expensive, common Ram maintenance issues taken care of, this is it.</p>
+                  <p>This is a rare Flame Red Night Edition with almost $16,000 in factory upgrades. It has been meticulously cared for, mechanically vetted, and is ready for its next owner.</p>
+                </div>
 
-              <h3 className="text-lg font-bold text-slate-900 mt-8 mb-2">🔧 RECENT MAINTENANCE & UPGRADES</h3>
-              <p>I don't believe in passing off worn-out parts to the next guy. In preparation for this sale, I have invested heavily in making sure this truck is perfect:</p>
-              <ul className="list-disc pl-5 space-y-1">
-                <li>Brand New Tires</li>
-                <li>Brand New Hubs and Bearings</li>
-                <li>Bulletproofed Suspension (Air-ride delete mentioned above)</li>
-                <li>Fresh Cosmetic Restoration: Just got out of the body shop to have minor scratches and door dings professionally removed. The exterior looks phenomenal. (Note: Driver's seat has minimal wear along the outside seam, typical for the year, but the interior is otherwise immaculate).</li>
-              </ul>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+                  {/* The Peace of Mind Guarantee */}
+                  <div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="bg-red-50 text-red-600 p-2 rounded-lg border border-red-100">
+                        <span className="text-xl">🛡️</span>
+                      </div>
+                      <h3 className="text-lg md:text-xl font-bold text-slate-900 m-0">The Peace of Mind Guarantee</h3>
+                    </div>
+                    <p className="mb-3">Let's talk about the elephant in the room with 4th Gen Rams: the factory air suspension. It's notorious for failing and costing thousands to fix. I have already paid to have the factory air ride professionally deleted and converted to a premium conventional coil/shock suspension. You get the perfect ride height with zero anxiety about winter suspension failures.</p>
+                    <p>Additionally, this truck was just evaluated by a major commercial truck buying center. It was thoroughly test-driven and throws ZERO diagnostic codes.</p>
+                  </div>
 
-              <h3 className="text-lg font-bold text-slate-900 mt-8 mb-2">🧰 THE ULTIMATE UTILITY & TOWING RIG</h3>
-              <p>This truck isn't just a pavement princess; it is optioned for serious work.</p>
-              <ul className="list-disc pl-5 space-y-1">
-                <li>RamBox® Cargo Management System: Lockable, weatherproof, and drainable bedside boxes.</li>
-                <li>Hidden In-Floor Storage: The rear footwells feature insulated, hidden storage bins.</li>
-                <li>Heavy Duty Towing: 5.7L HEMI V8 paired with the highly desirable 3.92 Rear Axle Ratio and Anti-Spin Differential. Includes factory Trailer Brake Control and Class IV Hitch.</li>
-                <li>Bed Setup: Factory Spray-in Bedliner, Tri-Fold Tonneau Cover, and Bed Cargo Divider/Extender.</li>
-              </ul>
+                  {/* Recent Maintenance */}
+                  <div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="bg-slate-100 text-slate-700 p-2 rounded-lg border border-slate-200">
+                        <span className="text-xl">🔧</span>
+                      </div>
+                      <h3 className="text-lg md:text-xl font-bold text-slate-900 m-0">Recent Maintenance & Upgrades</h3>
+                    </div>
+                    <p className="mb-3">I don't believe in passing off worn-out parts to the next guy. In preparation for this sale, I have invested heavily in making sure this truck is perfect:</p>
+                    <ul className="list-disc pl-5 space-y-2 text-slate-700 marker:text-slate-400">
+                      <li><strong>Brand New Tires</strong></li>
+                      <li><strong>Brand New Hubs and Bearings</strong></li>
+                      <li><strong>Bulletproofed Suspension</strong> (Air-ride delete mentioned above)</li>
+                      <li><strong>Fresh Cosmetic Restoration:</strong> Just got out of the body shop to have minor scratches and door dings professionally removed. The exterior looks phenomenal. (Note: Driver's seat has minimal wear along the outside seam, typical for the year, but the interior is otherwise immaculate).</li>
+                    </ul>
+                  </div>
 
-              <h3 className="text-lg font-bold text-slate-900 mt-8 mb-2">💎 LUXURY OPTIONS (Original $60k MSRP)</h3>
-              <p>You will be hard-pressed to find a truck with more interior features than this one:</p>
-              <ul className="list-disc pl-5 space-y-1">
-                <li>Interior Comfort: Black Leather-Trimmed Bucket Seats that are both Heated and Ventilated (Cooled). Heated Leather steering wheel. Power Sunroof.</li>
-                <li>Tech & Audio: Uconnect 8.4 NAV with Apple/Android capability, backed by the 9-Speaker Alpine Premium Audio System with Subwoofer.</li>
-                <li>Exterior Styling: Sport Performance Hood, Flat Black Badging, Black Painted Honeycomb Grille, 20-inch Black Aluminum Wheels, and Dual Rear Exhaust.</li>
-                <li>Convenience: Keyless Enter 'n Go, Remote Start, Rain-Sensitive Wipers, Auto High-Beams, and ParkSense Front/Rear Park Assist with Backup Camera.</li>
-              </ul>
+                  {/* Utility & Towing */}
+                  <div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="bg-slate-100 text-slate-700 p-2 rounded-lg border border-slate-200">
+                        <span className="text-xl">🧰</span>
+                      </div>
+                      <h3 className="text-lg md:text-xl font-bold text-slate-900 m-0">The Ultimate Utility & Towing Rig</h3>
+                    </div>
+                    <p className="mb-3">This truck isn't just a pavement princess; it is optioned for serious work.</p>
+                    <ul className="list-disc pl-5 space-y-2 text-slate-700 marker:text-slate-400">
+                      <li><strong>RamBox® Cargo Management System:</strong> Lockable, weatherproof, and drainable bedside boxes.</li>
+                      <li><strong>Hidden In-Floor Storage:</strong> The rear footwells feature insulated, hidden storage bins.</li>
+                      <li><strong>Heavy Duty Towing:</strong> 5.7L HEMI V8 paired with the highly desirable 3.92 Rear Axle Ratio and Anti-Spin Differential. Includes factory Trailer Brake Control and Class IV Hitch.</li>
+                      <li><strong>Bed Setup:</strong> Factory Spray-in Bedliner, Tri-Fold Tonneau Cover, and Bed Cargo Divider/Extender.</li>
+                    </ul>
+                  </div>
 
-              <p className="mt-8 font-medium">This truck represents a massive value. Dealers are selling standard, stripped-down trades for this price. KBB Private Party values this exact spec and condition at over $23,500.</p>
-              <p className="font-medium">Clean title in hand. Serious inquiries only. Come take it for a test drive and see for yourself—you won't find a better-equipped, better-sorted 2017 Ram on the market right now.</p>
-              <p className="font-medium text-red-600 mt-4">Contact [Your Name/Number] to schedule a showing.</p>
+                  {/* Luxury Options */}
+                  <div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="bg-slate-100 text-slate-700 p-2 rounded-lg border border-slate-200">
+                        <span className="text-xl">💎</span>
+                      </div>
+                      <h3 className="text-lg md:text-xl font-bold text-slate-900 m-0">Luxury Options (Original $60k MSRP)</h3>
+                    </div>
+                    <p className="mb-3">You will be hard-pressed to find a truck with more interior features than this one:</p>
+                    <ul className="list-disc pl-5 space-y-2 text-slate-700 marker:text-slate-400">
+                      <li><strong>Interior Comfort:</strong> Black Leather-Trimmed Bucket Seats that are both Heated and Ventilated (Cooled). Heated Leather steering wheel. Power Sunroof.</li>
+                      <li><strong>Tech & Audio:</strong> Uconnect 8.4 NAV with Apple/Android capability, backed by the 9-Speaker Alpine Premium Audio System with Subwoofer.</li>
+                      <li><strong>Exterior Styling:</strong> Sport Performance Hood, Flat Black Badging, Black Painted Honeycomb Grille, 20-inch Black Aluminum Wheels, and Dual Rear Exhaust.</li>
+                      <li><strong>Convenience:</strong> Keyless Enter 'n Go, Remote Start, Rain-Sensitive Wipers, Auto High-Beams, and ParkSense Front/Rear Park Assist with Backup Camera.</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="mt-12 bg-slate-50 border border-slate-200 rounded-xl p-6 md:p-8 text-center">
+                  <p className="text-lg font-medium text-slate-900 mb-4">
+                    This truck represents a massive value. Dealers are selling standard, stripped-down trades for this price. KBB Private Party values this exact spec and condition at over $23,500.
+                  </p>
+                  <p className="text-base text-slate-700 mb-6">
+                    Clean title in hand. Serious inquiries only. Come take it for a test drive and see for yourself—you won't find a better-equipped, better-sorted 2017 Ram on the market right now.
+                  </p>
+                  <button 
+                    onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="inline-flex items-center justify-center px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    Contact Seller to Schedule a Showing
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </section>
