@@ -15,7 +15,7 @@ const marketData = [
 
 export default function LandingPage() {
   const [activeSection, setActiveSection] = useState('overview');
-  const [truckDetails, setTruckDetails] = useState({ mileage: '78,000', price: '23,900' });
+  const [truckDetails, setTruckDetails] = useState({ mileage: '78,000', price: '23,900', windowStickerUrl: '' });
 
   useEffect(() => {
     fetch('/api/truck-details')
@@ -370,13 +370,31 @@ export default function LandingPage() {
             </div>
 
             {/* Window Sticker Placeholder */}
-            <div className="mb-8 bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-8 text-center flex flex-col items-center justify-center">
-              <div className="bg-white p-4 rounded-full shadow-sm mb-4">
-                <FileText size={32} className="text-slate-400" />
+            {truckDetails.windowStickerUrl ? (
+              <div className="mb-8 rounded-xl overflow-hidden shadow-sm border border-slate-200">
+                {truckDetails.windowStickerUrl.startsWith('data:application/pdf') ? (
+                  <iframe 
+                    src={truckDetails.windowStickerUrl} 
+                    title="Original Window Sticker"
+                    className="w-full h-[600px] bg-white border-0"
+                  />
+                ) : (
+                  <img 
+                    src={truckDetails.windowStickerUrl} 
+                    alt="Original Window Sticker" 
+                    className="w-full h-auto object-contain bg-white"
+                  />
+                )}
               </div>
-              <h3 className="text-lg font-semibold text-slate-700 mb-1">Window Sticker Document</h3>
-              <p className="text-slate-500 text-sm mb-4">The original factory window sticker will be displayed here.</p>
-            </div>
+            ) : (
+              <div className="mb-8 bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-8 text-center flex flex-col items-center justify-center">
+                <div className="bg-white p-4 rounded-full shadow-sm mb-4">
+                  <FileText size={32} className="text-slate-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-700 mb-1">Window Sticker Document</h3>
+                <p className="text-slate-500 text-sm mb-4">The original factory window sticker will be displayed here once uploaded.</p>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2 text-sm">
               <div className="flex justify-between py-2 border-b border-slate-50">

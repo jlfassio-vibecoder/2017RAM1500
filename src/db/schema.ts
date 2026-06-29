@@ -12,6 +12,7 @@ export const truckDetails = pgTable('truck_details', {
   id: integer('id').primaryKey(),
   mileage: text('mileage').notNull(),
   price: text('price').notNull(),
+  windowStickerUrl: text('window_sticker_url'),
 });
 
 export const inquiries = pgTable('inquiries', {

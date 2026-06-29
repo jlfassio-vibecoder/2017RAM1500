@@ -39,9 +39,9 @@ app.get('/api/truck-details', async (req, res) => {
 
 app.post('/api/truck-details', async (req, res) => {
   try {
-    const { mileage, price } = req.body;
+    const { mileage, price, windowStickerUrl } = req.body;
     await db.update(truckDetails)
-      .set({ mileage, price })
+      .set({ mileage, price, windowStickerUrl })
       .where(eq(truckDetails.id, 1));
     res.json({ success: true });
   } catch (error) {
