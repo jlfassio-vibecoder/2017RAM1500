@@ -1,0 +1,442 @@
+import React, { useEffect, useState } from 'react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { FileText } from 'lucide-react';
+import ChatWidget from './ChatWidget';
+import Gallery from './Gallery';
+import ContactForm from './ContactForm';
+import truckPhoto from '../assets/images/red_truck_snow_1782740280647.jpg';
+
+const marketData = [
+  { name: 'Carvana Offer', value: 16600, color: 'rgba(203, 213, 225, 0.5)' },
+  { name: 'Chevy Buying Center', value: 15000, color: 'rgba(203, 213, 225, 0.5)' },
+  { name: 'KBB Private Party', value: 23528, color: 'rgba(220, 38, 38, 0.4)' },
+  { name: 'This Night Edition', value: 23528, color: 'rgba(220, 38, 38, 0.9)' }
+];
+
+export default function LandingPage() {
+  const [activeSection, setActiveSection] = useState('overview');
+  const [truckDetails, setTruckDetails] = useState({ mileage: '78,000', price: '23,900' });
+
+  useEffect(() => {
+    fetch('/api/truck-details')
+      .then(res => res.json())
+      .then(data => setTruckDetails(data))
+      .catch(err => console.error(err));
+  }, []);
+
+  const scrollToSection = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    setActiveSection(id);
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['overview', 'pitch', 'gallery', 'maintenance', 'market', 'features', 'build-sheet', 'contact'];
+      const scrollPosition = window.scrollY + 100;
+      
+      for (const section of sections) {
+        const el = document.getElementById(section);
+        if (el && el.offsetTop <= scrollPosition && (el.offsetTop + el.offsetHeight) > scrollPosition) {
+          setActiveSection(section);
+        }
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <div className="font-sans bg-[#f8f9fa] text-slate-900 min-h-screen">
+      <nav className="sticky top-0 z-40 h-16 flex items-center justify-between px-8 bg-slate-900 text-white flex-shrink-0 shadow-sm">
+        <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-4">
+              <div className="flex flex-col">
+                <span className="text-xl font-bold tracking-tight">RAM 1500 <span className="font-light text-slate-400">NIGHT EDITION</span></span>
+                <span className="text-[10px] uppercase tracking-[0.2em] text-red-600 font-semibold">VIN Verified: 1C6RR7MT3HS761025</span>
+              </div>
+            </div>
+            <div className="hidden md:flex items-center space-x-8 text-sm font-medium">
+              {['overview', 'pitch', 'gallery', 'maintenance', 'market', 'features', 'build-sheet', 'contact'].map((section) => (
+                <button
+                  key={section}
+                  onClick={() => scrollToSection(section)}
+                  className={`capitalize pb-1 border-b-2 transition-colors ${
+                    activeSection === section
+                      ? 'border-red-600 text-red-600'
+                      : 'border-transparent text-slate-400 hover:text-white hover:border-slate-600'
+                  }`}
+                >
+                  {section === 'pitch' ? 'Sales Pitch' : section === 'features' ? 'Utility' : section === 'market' ? 'Market Value' : section === 'build-sheet' ? 'Build Sheet' : section === 'contact' ? 'Contact' : section}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
+        {/* Hero Section */}
+        <section id="overview" className="mb-16 pt-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="flex flex-col gap-6">
+              <h1 className="text-4xl md:text-5xl font-bold text-slate-900 leading-tight">
+                Premium Utility meets <br /><span className="text-red-600">Night Edition</span> Rarity
+              </h1>
+              <p className="text-sm text-slate-500 leading-relaxed max-w-lg">
+                A meticulously maintained 2017 Ram 1500 Crew Cab, featuring the iconic blacked-out Night Edition styling and over $4,000 in recent preventative mechanical upgrades.
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
+                  <span className="text-[10px] uppercase text-slate-400 font-bold block mb-1">VIN VERIFIED</span>
+                  <span className="font-semibold text-sm">1C6RR7MT3HS761025</span>
+                </div>
+                <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
+                  <span className="text-[10px] uppercase text-slate-400 font-bold block mb-1">DRIVETRAIN</span>
+                  <span className="font-semibold text-sm uppercase">4WD Fully Loaded</span>
+                </div>
+              </div>
+            </div>
+            <div className="relative h-80 w-full bg-slate-200 rounded-2xl overflow-hidden group shadow-sm border border-slate-200">
+              <img src={truckPhoto} alt="2017 Ram 1500 Crew Cab Night Edition" className="absolute inset-0 w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent flex items-end p-6 z-10">
+                <div className="w-full flex justify-between items-end text-white">
+                  <div>
+                    <h2 className="text-2xl font-bold drop-shadow-md">2017 Crew Cab 4WD</h2>
+                    <p className="text-slate-100 text-sm mt-1 drop-shadow-md">Monochromatic Black Trim & Wheels</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="px-3 py-1 bg-black/40 backdrop-blur rounded text-xs font-semibold uppercase tracking-wider border border-white/10">Night Ed.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Sales Pitch Section */}
+        <section id="pitch" className="mb-16 pt-8">
+          <div className="bg-white border border-slate-200 rounded-2xl p-8 md:p-10 shadow-sm">
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">Seller's Note</h2>
+            <div className="prose prose-slate max-w-none space-y-4 text-slate-700 leading-relaxed text-sm md:text-base">
+              <p className="font-semibold text-lg text-slate-900">2017 Ram 1500 Crew Cab Night Edition 4x4 – Fully Loaded, Zero Codes, Bulletproofed Suspension</p>
+              
+              <ul className="font-medium text-slate-800 list-none p-0 space-y-1">
+                <li>Asking Price: ${truckDetails.price}</li>
+                <li>Mileage: {truckDetails.mileage}</li>
+                <li>Original MSRP: $59,895 (See Window Sticker)</li>
+              </ul>
+              
+              <p>If you are looking for a fully-loaded, turn-key truck that has already had all the expensive, common Ram maintenance issues taken care of, this is it.</p>
+              <p>This is a rare Flame Red Night Edition with almost $16,000 in factory upgrades. It has been meticulously cared for, mechanically vetted, and is ready for its next owner.</p>
+
+              <h3 className="text-lg font-bold text-slate-900 mt-8 mb-2">🛡️ THE PEACE OF MIND GUARANTEE</h3>
+              <p>Let's talk about the elephant in the room with 4th Gen Rams: the factory air suspension. It's notorious for failing and costing thousands to fix. I have already paid to have the factory air ride professionally deleted and converted to a premium conventional coil/shock suspension. You get the perfect ride height with zero anxiety about winter suspension failures.</p>
+              <p>Additionally, this truck was just evaluated by a major commercial truck buying center. It was thoroughly test-driven and throws ZERO diagnostic codes.</p>
+
+              <h3 className="text-lg font-bold text-slate-900 mt-8 mb-2">🔧 RECENT MAINTENANCE & UPGRADES</h3>
+              <p>I don't believe in passing off worn-out parts to the next guy. In preparation for this sale, I have invested heavily in making sure this truck is perfect:</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Brand New Tires</li>
+                <li>Brand New Hubs and Bearings</li>
+                <li>Bulletproofed Suspension (Air-ride delete mentioned above)</li>
+                <li>Fresh Cosmetic Restoration: Just got out of the body shop to have minor scratches and door dings professionally removed. The exterior looks phenomenal. (Note: Driver's seat has minimal wear along the outside seam, typical for the year, but the interior is otherwise immaculate).</li>
+              </ul>
+
+              <h3 className="text-lg font-bold text-slate-900 mt-8 mb-2">🧰 THE ULTIMATE UTILITY & TOWING RIG</h3>
+              <p>This truck isn't just a pavement princess; it is optioned for serious work.</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>RamBox® Cargo Management System: Lockable, weatherproof, and drainable bedside boxes.</li>
+                <li>Hidden In-Floor Storage: The rear footwells feature insulated, hidden storage bins.</li>
+                <li>Heavy Duty Towing: 5.7L HEMI V8 paired with the highly desirable 3.92 Rear Axle Ratio and Anti-Spin Differential. Includes factory Trailer Brake Control and Class IV Hitch.</li>
+                <li>Bed Setup: Factory Spray-in Bedliner, Tri-Fold Tonneau Cover, and Bed Cargo Divider/Extender.</li>
+              </ul>
+
+              <h3 className="text-lg font-bold text-slate-900 mt-8 mb-2">💎 LUXURY OPTIONS (Original $60k MSRP)</h3>
+              <p>You will be hard-pressed to find a truck with more interior features than this one:</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Interior Comfort: Black Leather-Trimmed Bucket Seats that are both Heated and Ventilated (Cooled). Heated Leather steering wheel. Power Sunroof.</li>
+                <li>Tech & Audio: Uconnect 8.4 NAV with Apple/Android capability, backed by the 9-Speaker Alpine Premium Audio System with Subwoofer.</li>
+                <li>Exterior Styling: Sport Performance Hood, Flat Black Badging, Black Painted Honeycomb Grille, 20-inch Black Aluminum Wheels, and Dual Rear Exhaust.</li>
+                <li>Convenience: Keyless Enter 'n Go, Remote Start, Rain-Sensitive Wipers, Auto High-Beams, and ParkSense Front/Rear Park Assist with Backup Camera.</li>
+              </ul>
+
+              <p className="mt-8 font-medium">This truck represents a massive value. Dealers are selling standard, stripped-down trades for this price. KBB Private Party values this exact spec and condition at over $23,500.</p>
+              <p className="font-medium">Clean title in hand. Serious inquiries only. Come take it for a test drive and see for yourself—you won't find a better-equipped, better-sorted 2017 Ram on the market right now.</p>
+              <p className="font-medium text-red-600 mt-4">Contact [Your Name/Number] to schedule a showing.</p>
+            </div>
+          </div>
+        </section>
+
+        <Gallery />
+
+        {/* Mechanical Integrity Section */}
+        <section id="maintenance" className="mb-16 pt-8">
+          <div className="bg-white border border-slate-200 rounded-2xl p-8 md:p-10 shadow-sm">
+            <div className="max-w-3xl mb-8">
+              <h2 className="text-2xl font-bold text-slate-900 mb-3">Mechanical Integrity & Upgrades</h2>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                Most used Rams in this mileage bracket face expensive repairs. We have proactively addressed the two most common "pain points" for this generation, ensuring this truck is turn-key for the next 100,000 miles.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-slate-50 p-5 rounded-xl border border-dashed border-slate-300">
+                <div className="h-1 bg-red-600 w-8 mb-4"></div>
+                <h3 className="text-sm font-semibold text-slate-900 mb-2">Air Suspension Delete</h3>
+                <p className="text-xs text-slate-500 leading-relaxed">Converted to heavy-duty regular shocks. Eliminates the risk of the $3,000 factory air-ride failure common in cold climates.</p>
+              </div>
+              <div className="bg-slate-50 p-5 rounded-xl border border-dashed border-slate-300">
+                <div className="h-1 bg-red-600 w-8 mb-4"></div>
+                <h3 className="text-sm font-semibold text-slate-900 mb-2">Drivetrain Refresh</h3>
+                <p className="text-xs text-slate-500 leading-relaxed">Brand new hubs and bearings installed. Smooth, quiet, and vibration-free operation at highway speeds.</p>
+              </div>
+              <div className="bg-slate-50 p-5 rounded-xl border border-dashed border-slate-300">
+                <div className="h-1 bg-red-600 w-8 mb-4"></div>
+                <h3 className="text-sm font-semibold text-slate-900 mb-2">New All-Terrain Rubber</h3>
+                <p className="text-xs text-slate-500 leading-relaxed">Fresh tires provide maximum traction and improved ride quality. Zero immediate maintenance needed.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Market Comparison */}
+        <section id="market" className="mb-16 pt-8">
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">Market Valuation Context</h2>
+            <p className="text-sm text-slate-500 max-w-2xl">
+              While algorithmic offers from dealers focus on wholesale turnover, this data illustrates the true replacement cost for a vehicle of this specific configuration and condition.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+              <h3 className="text-[10px] font-bold text-slate-400 mb-6 uppercase tracking-widest">Pricing Comparison (2024 Market Data)</h3>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={marketData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#64748b' }} />
+                    <YAxis 
+                      tickFormatter={(value) => `$${value / 1000}k`} 
+                      axisLine={false} 
+                      tickLine={false}
+                      tick={{ fontSize: 11, fill: '#64748b' }}
+                    />
+                    <Tooltip 
+                      cursor={{ fill: 'transparent' }}
+                      contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '12px' }}
+                      formatter={(value: number) => [`$${value.toLocaleString()}`, 'Valuation']}
+                    />
+                    <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                      {marketData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color === 'rgba(220, 38, 38, 0.9)' ? '#dc2626' : entry.color === 'rgba(220, 38, 38, 0.4)' ? '#fca5a5' : '#e2e8f0'} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-sm">
+                <span className="text-[10px] uppercase text-slate-400 font-bold block mb-1">Chevy Center Inspection</span>
+                <p className="text-sm font-semibold text-slate-900 mb-1">Zero diagnostic codes.</p>
+                <p className="text-xs text-slate-500 leading-relaxed">Tested and verified by a third-party dealership. Complete mechanical green light.</p>
+              </div>
+              <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-sm">
+                <span className="text-[10px] uppercase text-slate-400 font-bold block mb-1">Market Shortage</span>
+                <p className="text-sm font-semibold text-slate-900 mb-1">Under-represented Combo</p>
+                <p className="text-xs text-slate-500 leading-relaxed">The "RamBox + Crew Cab + Night Edition" combo is currently under-represented in the private market.</p>
+              </div>
+              <div className="flex items-center justify-between p-5 bg-slate-900 text-white rounded-xl shadow-sm">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Suggested Listing</span>
+                <span className="text-xl font-bold text-red-600">${truckDetails.price}</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Utility & Features */}
+        <section id="features" className="mb-16 pt-8">
+          <h2 className="text-2xl font-bold text-slate-900 mb-6">Vehicle Highlights & Utility</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:-translate-y-1 transition-transform">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-red-600 font-bold italic text-lg">✔</span>
+                <h3 className="text-sm font-bold text-slate-900">RAM Boxes</h3>
+              </div>
+              <p className="text-xs text-slate-500 leading-relaxed">Integrated, lockable, and lighted storage bins built into the bed rails.</p>
+            </div>
+            <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:-translate-y-1 transition-transform">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-red-600 font-bold italic text-lg">✔</span>
+                <h3 className="text-sm font-bold text-slate-900">Hidden Storage</h3>
+              </div>
+              <p className="text-xs text-slate-500 leading-relaxed">Discrete storage boxes located in the rear footwells. Ideal for keeping valuables out of sight.</p>
+            </div>
+            <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:-translate-y-1 transition-transform">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-red-600 font-bold italic text-lg">✔</span>
+                <h3 className="text-sm font-bold text-slate-900">Max Tow Package</h3>
+              </div>
+              <p className="text-xs text-slate-500 leading-relaxed">Factory-installed hitch and trailer wiring. Ready to haul trailers, boats, or campers.</p>
+            </div>
+            <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:-translate-y-1 transition-transform">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-red-600 font-bold italic text-lg">✔</span>
+                <h3 className="text-sm font-bold text-slate-900">Premium Interior</h3>
+              </div>
+              <p className="text-xs text-slate-500 leading-relaxed">Fully loaded interior with only minimal wear on driver seat seam. Clean, non-smoker.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Build Sheet Section */}
+        <section id="build-sheet" className="mb-16 pt-8">
+          <div className="bg-white border border-slate-200 rounded-2xl p-8 md:p-10 shadow-sm">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4 border-b border-slate-100 pb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-slate-900 mb-2">Original Window Sticker</h2>
+                <p className="text-sm text-slate-500">Factory installed options and original MSRP.</p>
+              </div>
+              <div className="text-left md:text-right">
+                <span className="text-[10px] uppercase text-slate-400 font-bold block mb-1">Total Price</span>
+                <span className="text-3xl font-bold text-slate-900">$59,895</span>
+              </div>
+            </div>
+
+            {/* Window Sticker Placeholder */}
+            <div className="mb-8 bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-8 text-center flex flex-col items-center justify-center">
+              <div className="bg-white p-4 rounded-full shadow-sm mb-4">
+                <FileText size={32} className="text-slate-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-700 mb-1">Window Sticker Document</h3>
+              <p className="text-slate-500 text-sm mb-4">The original factory window sticker will be displayed here.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2 text-sm">
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="font-semibold text-slate-900">Base Price</span>
+                <span className="text-slate-600">$44,095</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">Leather-Trimmed Bucket Seats</span>
+                <span className="text-slate-600">$1,545</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">Night Edition Package 26Q</span>
+                <span className="text-slate-600">$395</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">Convenience Group</span>
+                <span className="text-slate-600">$545</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">9-Speaker Alpine® Audio w/ Sub</span>
+                <span className="text-slate-600">$345</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">Tri-Fold Tonneau Cover</span>
+                <span className="text-slate-600">$595</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">8-Speed Auto 8HP70 Transmission</span>
+                <span className="text-slate-600">$500</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">Anti-Spin Differential Rear Axle</span>
+                <span className="text-slate-600">$435</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">5.7-Liter V8 HEMI® MDS VVT Engine</span>
+                <span className="text-slate-600">$1,450</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">Power Sunroof</span>
+                <span className="text-slate-600">$1,095</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">Sport Performance Hood</span>
+                <span className="text-slate-600">$775</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">Black Tubular Side Steps</span>
+                <span className="text-slate-600">$425</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">32-Gallon Fuel Tank</span>
+                <span className="text-slate-600">$405</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">Uconnect® 8.4 NAV</span>
+                <span className="text-slate-600">$795</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">4-Corner Air Suspension</span>
+                <span className="text-slate-600">$1,715</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">ParkSense® Front / Rear Park Assist</span>
+                <span className="text-slate-600">$445</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">Ram Box® Cargo Management System</span>
+                <span className="text-slate-600">$1,295</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">Spray-In Bedliner</span>
+                <span className="text-slate-600">$495</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">Class IV Receiver Hitch</span>
+                <span className="text-slate-600">$345</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">Trailer Brake Control</span>
+                <span className="text-slate-600">$295</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">Rear Window Defroster</span>
+                <span className="text-slate-600">$195</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">Front & Rear Rubber Floor Mats</span>
+                <span className="text-slate-600">$125</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="text-slate-700">3.92 Rear Axle / Engine Block Heater</span>
+                <span className="text-slate-600">$190</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-50">
+                <span className="font-semibold text-slate-900">Destination Charge</span>
+                <span className="text-slate-600">$1,395</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <ContactForm />
+
+        {/* Condition Report */}
+        <section className="bg-white border border-slate-200 rounded-xl p-6 mb-16 shadow-sm">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div>
+              <h2 className="text-sm font-bold text-slate-900 mb-1">Aesthetic Restoration</h2>
+              <p className="text-xs text-slate-500">Currently undergoing full professional paint correction and dent repair to ensure Good-to-Excellent exterior status.</p>
+            </div>
+            <div className="flex gap-3">
+              <div className="px-3 py-1.5 bg-slate-50 rounded text-xs font-semibold border border-slate-200 text-slate-700">✓ No Accidents</div>
+              <div className="px-3 py-1.5 bg-slate-50 rounded text-xs font-semibold border border-slate-200 text-slate-700">✓ Clean Title</div>
+            </div>
+          </div>
+        </section>
+
+        <ChatWidget />
+      </main>
+
+      <footer className="bg-slate-900 py-8 text-center border-t border-slate-800">
+        <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">2017 Ram 1500 Crew Cab Night Edition • Buyer's Guide</p>
+      </footer>
+    </div>
+  );
+}
