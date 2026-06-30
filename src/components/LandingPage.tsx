@@ -7,15 +7,16 @@ import ContactForm from './ContactForm';
 import truckPhoto from '../assets/images/red_truck_snow_1782740280647.jpg';
 
 const marketData = [
-  { name: 'Carvana Offer', value: 16600, color: 'rgba(203, 213, 225, 0.5)' },
-  { name: 'Chevy Buying Center', value: 15000, color: 'rgba(203, 213, 225, 0.5)' },
-  { name: 'KBB Private Party', value: 23528, color: 'rgba(220, 38, 38, 0.4)' },
-  { name: 'This Night Edition', value: 23528, color: 'rgba(220, 38, 38, 0.9)' }
+  { name: 'Dealer (118k)', value: 24495, color: 'rgba(203, 213, 225, 0.5)' },
+  { name: 'This Truck (102k)', value: 23900, color: 'rgba(220, 38, 38, 0.9)' },
+  { name: 'Dealer (98k)', value: 24593, color: 'rgba(203, 213, 225, 0.5)' },
+  { name: 'Dealer (94k)', value: 25999, color: 'rgba(203, 213, 225, 0.5)' },
+  { name: 'Dealer (89k)', value: 29244, color: 'rgba(203, 213, 225, 0.5)' }
 ];
 
 export default function LandingPage() {
   const [activeSection, setActiveSection] = useState('overview');
-  const [truckDetails, setTruckDetails] = useState({ mileage: '78,000', price: '23,900', windowStickerUrl: '', carfaxReportUrl: '' });
+  const [truckDetails, setTruckDetails] = useState({ mileage: '78,000', price: '23,900', windowStickerUrl: '', carfaxReportUrl: '', kbbReportUrl: '', smogReportUrl: '' });
 
   useEffect(() => {
     fetch('/api/truck-details')
@@ -31,7 +32,7 @@ export default function LandingPage() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['overview', 'pitch', 'gallery', 'maintenance', 'market', 'features', 'build-sheet', 'contact'];
+      const sections = ['overview', 'pitch', 'gallery', 'maintenance', 'market', 'features', 'build-sheet', 'kbb', 'carfax', 'smog', 'contact'];
       const scrollPosition = window.scrollY + 100;
       
       for (const section of sections) {
@@ -58,7 +59,7 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="hidden md:flex items-center space-x-8 text-sm font-medium">
-              {['overview', 'pitch', 'gallery', 'maintenance', 'market', 'features', 'build-sheet', 'carfax', 'contact'].map((section) => (
+              {['overview', 'pitch', 'gallery', 'maintenance', 'market', 'features', 'build-sheet', 'kbb', 'carfax', 'smog', 'contact'].map((section) => (
                 <button
                   key={section}
                   onClick={() => scrollToSection(section)}
@@ -68,7 +69,7 @@ export default function LandingPage() {
                       : 'border-transparent text-slate-400 hover:text-white hover:border-slate-600'
                   }`}
                 >
-                  {section === 'pitch' ? "Seller's Note" : section === 'features' ? 'Utility' : section === 'market' ? 'Market Value' : section === 'build-sheet' ? 'Build Sheet' : section === 'contact' ? 'Contact' : section}
+                  {section === 'pitch' ? "Seller's Note" : section === 'features' ? 'Utility' : section === 'market' ? 'Market Value' : section === 'build-sheet' ? 'Build Sheet' : section === 'kbb' ? 'KBB Report' : section === 'carfax' ? 'Carfax' : section === 'smog' ? 'Smog Report' : section === 'contact' ? 'Contact' : section}
                 </button>
               ))}
             </div>
@@ -270,18 +271,19 @@ export default function LandingPage() {
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-slate-900 mb-2">Market Valuation Context</h2>
             <p className="text-sm text-slate-500 max-w-2xl">
-              While algorithmic offers from dealers focus on wholesale turnover, this data illustrates the true replacement cost for a vehicle of this specific configuration and condition.
+              While algorithmic offers from dealers focus on wholesale turnover, a true market analysis illustrates the replacement cost for a vehicle of this specific configuration and condition. As a buyer, you must understand the difference between purchasing a fully sorted vehicle from a private party versus walking onto a retail dealership lot. Finding an equivalent 2017 Ram 1500 Night Edition in Good to Excellent condition with roughly 101,769 miles is currently incredibly difficult, driving up its intrinsic value.
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-              <h3 className="text-[10px] font-bold text-slate-400 mb-6 uppercase tracking-widest">Pricing Comparison (2024 Market Data)</h3>
+              <h3 className="text-[10px] font-bold text-slate-400 mb-6 uppercase tracking-widest">Pricing Comparison (Dealership Asking Prices)</h3>
               <div className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={marketData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                     <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#64748b' }} />
                     <YAxis 
+                      domain={[15000, 30000]}
                       tickFormatter={(value) => `$${value / 1000}k`} 
                       axisLine={false} 
                       tickLine={false}
@@ -303,18 +305,21 @@ export default function LandingPage() {
             </div>
             <div className="space-y-4">
               <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-sm">
-                <span className="text-[10px] uppercase text-slate-400 font-bold block mb-1">Chevy Center Inspection</span>
-                <p className="text-sm font-semibold text-slate-900 mb-1">Zero diagnostic codes.</p>
-                <p className="text-xs text-slate-500 leading-relaxed">Tested and verified by a third-party dealership. Complete mechanical green light.</p>
+                <span className="text-[10px] uppercase text-slate-400 font-bold block mb-1">Dealer Retail Reality</span>
+                <p className="text-sm font-semibold text-slate-900 mb-1">$25,500 - $26,500+</p>
+                <p className="text-xs text-slate-500 leading-relaxed">Dealerships price these trucks at a premium, then frequently add mandatory documentation fees, prep fees, and taxes that drive the "out-the-door" cost even higher.</p>
               </div>
               <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-sm">
-                <span className="text-[10px] uppercase text-slate-400 font-bold block mb-1">Market Shortage</span>
-                <p className="text-sm font-semibold text-slate-900 mb-1">Under-represented Combo</p>
-                <p className="text-xs text-slate-500 leading-relaxed">The "RamBox + Crew Cab + Night Edition" combo is currently under-represented in the private market.</p>
+                <span className="text-[10px] uppercase text-slate-400 font-bold block mb-1">KBB Private Party Value</span>
+                <p className="text-sm font-semibold text-slate-900 mb-1">$23,652 Target Value</p>
+                <p className="text-xs text-slate-500 leading-relaxed">The specific target value based on mileage and standard options. The recognized fair market range is $22,552 - $24,752 for a private transaction in Good condition.</p>
               </div>
-              <div className="flex items-center justify-between p-5 bg-slate-900 text-white rounded-xl shadow-sm">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Suggested Listing</span>
-                <span className="text-xl font-bold text-red-600">${truckDetails.price}</span>
+              <div className="flex flex-col p-5 bg-slate-900 text-white rounded-xl shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">This Night Edition</span>
+                  <span className="text-xl font-bold text-red-600">${truckDetails.price}</span>
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed">A fair, data-backed price that reflects the truck's pristine mechanical state and thousands in recent maintenance.</p>
               </div>
             </div>
           </div>
@@ -513,6 +518,44 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* KBB Report Document Viewer */}
+        <section id="kbb" className="bg-white border border-slate-200 rounded-xl p-8 mb-16 shadow-sm">
+          <div className="flex justify-between items-end mb-8">
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900 mb-2">Kelley Blue Book Report</h2>
+              <p className="text-slate-500 text-sm">Official KBB valuation and condition report.</p>
+            </div>
+          </div>
+
+          <div className="border border-slate-100 rounded-xl bg-white p-6 shadow-sm">
+            {truckDetails.kbbReportUrl ? (
+              <div className="rounded-xl overflow-hidden shadow-sm border border-slate-200">
+                {truckDetails.kbbReportUrl.startsWith('data:application/pdf') ? (
+                  <iframe 
+                    src={truckDetails.kbbReportUrl} 
+                    title="KBB Report"
+                    className="w-full h-[600px] bg-white border-0"
+                  />
+                ) : (
+                  <img 
+                    src={truckDetails.kbbReportUrl} 
+                    alt="KBB Report" 
+                    className="w-full h-auto object-contain bg-white"
+                  />
+                )}
+              </div>
+            ) : (
+              <div className="bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-8 text-center flex flex-col items-center justify-center">
+                <div className="bg-white p-4 rounded-full shadow-sm mb-4">
+                  <FileText size={32} className="text-slate-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-700 mb-1">Kelley Blue Book Report</h3>
+                <p className="text-slate-500 text-sm mb-4">The KBB Report will be displayed here once uploaded.</p>
+              </div>
+            )}
+          </div>
+        </section>
+
         {/* Carfax Report Document Viewer */}
         <section id="carfax" className="bg-white border border-slate-200 rounded-xl p-8 mb-16 shadow-sm">
           <div className="flex justify-between items-end mb-8">
@@ -546,6 +589,44 @@ export default function LandingPage() {
                 </div>
                 <h3 className="text-lg font-semibold text-slate-700 mb-1">Carfax Report</h3>
                 <p className="text-slate-500 text-sm mb-4">The Carfax Report will be displayed here once uploaded.</p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Smog Report Document Viewer */}
+        <section id="smog" className="bg-white border border-slate-200 rounded-xl p-8 mb-16 shadow-sm">
+          <div className="flex justify-between items-end mb-8">
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900 mb-2">Smog Report</h2>
+              <p className="text-slate-500 text-sm">Official emissions and smog check certification.</p>
+            </div>
+          </div>
+
+          <div className="border border-slate-100 rounded-xl bg-white p-6 shadow-sm">
+            {truckDetails.smogReportUrl ? (
+              <div className="rounded-xl overflow-hidden shadow-sm border border-slate-200">
+                {truckDetails.smogReportUrl.startsWith('data:application/pdf') ? (
+                  <iframe 
+                    src={truckDetails.smogReportUrl} 
+                    title="Smog Report"
+                    className="w-full h-[600px] bg-white border-0"
+                  />
+                ) : (
+                  <img 
+                    src={truckDetails.smogReportUrl} 
+                    alt="Smog Report" 
+                    className="w-full h-auto object-contain bg-white"
+                  />
+                )}
+              </div>
+            ) : (
+              <div className="bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-8 text-center flex flex-col items-center justify-center">
+                <div className="bg-white p-4 rounded-full shadow-sm mb-4">
+                  <FileText size={32} className="text-slate-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-700 mb-1">Smog Report</h3>
+                <p className="text-slate-500 text-sm mb-4">The Smog Report will be displayed here once uploaded.</p>
               </div>
             )}
           </div>

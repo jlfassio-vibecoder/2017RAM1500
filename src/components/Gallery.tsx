@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import exteriorImg from '../assets/images/gallery_exterior_1782746052182.jpg';
 import interiorImg from '../assets/images/gallery_interior_1782746064770.jpg';
-import utilityImg from '../assets/images/gallery_utility_1782746076050.jpg';
+import utilityImg from '../assets/images/gallery_utility_new_1782783804334.jpg';
 import upgradesImg from '../assets/images/gallery_upgrades_1782746088253.jpg';
 
 const ALL_PHOTOS = [
