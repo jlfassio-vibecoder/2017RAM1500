@@ -1,22 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { FileText } from 'lucide-react';
+import { FileText, Menu, X } from 'lucide-react';
 import ChatWidget from './ChatWidget';
 import Gallery from './Gallery';
 import ContactForm from './ContactForm';
 import truckPhoto from '../assets/images/red_truck_snow_1782740280647.jpg';
 
-const marketData = [
-  { name: 'Dealer (118k)', value: 24495, color: 'rgba(203, 213, 225, 0.5)' },
-  { name: 'This Truck (102k)', value: 23900, color: 'rgba(220, 38, 38, 0.9)' },
-  { name: 'Dealer (98k)', value: 24593, color: 'rgba(203, 213, 225, 0.5)' },
-  { name: 'Dealer (94k)', value: 25999, color: 'rgba(203, 213, 225, 0.5)' },
-  { name: 'Dealer (89k)', value: 29244, color: 'rgba(203, 213, 225, 0.5)' }
-];
-
 export default function LandingPage() {
   const [activeSection, setActiveSection] = useState('overview');
-  const [truckDetails, setTruckDetails] = useState({ mileage: '78,000', price: '23,900', windowStickerUrl: '', carfaxReportUrl: '', kbbReportUrl: '', smogReportUrl: '' });
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [truckDetails, setTruckDetails] = useState<any>({ mileage: '78,000', price: '23,900', windowStickerUrl: '', carfaxReportUrl: '', kbbReportUrl: '', smogReportUrl: '' });
+
+  // Compute market data dynamically using updated price and mileage
+  const numericPrice = parseInt(truckDetails.price.replace(/,/g, ''), 10) || 23900;
+  const shortMileage = truckDetails.mileage ? `${Math.round(parseInt(truckDetails.mileage.replace(/,/g, ''), 10) / 1000)}k` : '102k';
+  
+  const marketData = [
+    { name: 'Dealer (118k)', value: 24495, color: 'rgba(203, 213, 225, 0.5)' },
+    { name: `This Truck (${shortMileage})`, value: numericPrice, color: 'rgba(220, 38, 38, 0.9)' },
+    { name: 'Dealer (98k)', value: 24593, color: 'rgba(203, 213, 225, 0.5)' },
+    { name: 'Dealer (94k)', value: 25999, color: 'rgba(203, 213, 225, 0.5)' },
+    { name: 'Dealer (89k)', value: 29244, color: 'rgba(203, 213, 225, 0.5)' }
+  ];
 
   useEffect(() => {
     fetch('/api/truck-details')
@@ -28,6 +33,7 @@ export default function LandingPage() {
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
     setActiveSection(id);
+    setIsDrawerOpen(false);
   };
 
   useEffect(() => {
@@ -58,8 +64,10 @@ export default function LandingPage() {
                 <span className="text-[10px] uppercase tracking-[0.2em] text-red-600 font-semibold">VIN Verified: 1C6RR7MT3HS761025</span>
               </div>
             </div>
-            <div className="hidden md:flex items-center space-x-8 text-sm font-medium">
-              {['overview', 'pitch', 'gallery', 'maintenance', 'market', 'features', 'build-sheet', 'kbb', 'carfax', 'smog', 'contact'].map((section) => (
+            
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-6 text-sm font-medium">
+              {['pitch', 'gallery', 'market', 'build-sheet', 'carfax'].map((section) => (
                 <button
                   key={section}
                   onClick={() => scrollToSection(section)}
@@ -69,13 +77,71 @@ export default function LandingPage() {
                       : 'border-transparent text-slate-400 hover:text-white hover:border-slate-600'
                   }`}
                 >
-                  {section === 'pitch' ? "Seller's Note" : section === 'features' ? 'Utility' : section === 'market' ? 'Market Value' : section === 'build-sheet' ? 'Build Sheet' : section === 'kbb' ? 'KBB Report' : section === 'carfax' ? 'Carfax' : section === 'smog' ? 'Smog Report' : section === 'contact' ? 'Contact' : section}
+                  {section === 'pitch' ? "Seller's Note" : section === 'market' ? 'Market Value' : section === 'build-sheet' ? 'Build Sheet' : section === 'carfax' ? 'Carfax' : section}
                 </button>
               ))}
+              <button
+                onClick={() => setIsDrawerOpen(true)}
+                className="flex items-center gap-1 text-slate-400 hover:text-white transition-colors ml-4"
+              >
+                More <Menu size={16} />
+              </button>
+            </div>
+
+            {/* Mobile Navigation Toggle */}
+            <div className="md:hidden flex items-center">
+              <button
+                onClick={() => setIsDrawerOpen(true)}
+                className="text-slate-400 hover:text-white transition-colors"
+                aria-label="Open menu"
+              >
+                <Menu size={24} />
+              </button>
             </div>
           </div>
         </div>
       </nav>
+
+      {/* Drawer Overlay */}
+      {isDrawerOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm transition-opacity"
+          onClick={() => setIsDrawerOpen(false)}
+        />
+      )}
+
+      {/* Side Drawer */}
+      <div 
+        className={`fixed top-0 right-0 z-50 w-64 h-full bg-slate-900 shadow-2xl transform transition-transform duration-300 ease-in-out ${
+          isDrawerOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <div className="p-6 flex flex-col h-full overflow-y-auto">
+          <div className="flex justify-end mb-8">
+            <button 
+              onClick={() => setIsDrawerOpen(false)}
+              className="text-slate-400 hover:text-white transition-colors"
+            >
+              <X size={24} />
+            </button>
+          </div>
+          <div className="flex flex-col space-y-6 text-sm font-medium">
+            {['overview', 'pitch', 'gallery', 'maintenance', 'market', 'features', 'build-sheet', 'kbb', 'carfax', 'smog', 'contact'].map((section) => (
+              <button
+                key={section}
+                onClick={() => scrollToSection(section)}
+                className={`text-left capitalize pb-2 border-b transition-colors ${
+                  activeSection === section
+                    ? 'border-red-600 text-red-600'
+                    : 'border-slate-800 text-slate-400 hover:text-white hover:border-slate-600'
+                }`}
+              >
+                {section === 'pitch' ? "Seller's Note" : section === 'features' ? 'Utility' : section === 'market' ? 'Market Value' : section === 'build-sheet' ? 'Build Sheet' : section === 'kbb' ? 'KBB Report' : section === 'carfax' ? 'Carfax' : section === 'smog' ? 'Smog Report' : section === 'contact' ? 'Contact' : section}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
         {/* Hero Section */}
@@ -122,8 +188,8 @@ export default function LandingPage() {
             {/* Header Area */}
             <div className="bg-slate-900 text-white p-8 md:p-10">
               <h2 className="text-2xl md:text-3xl font-bold mb-4">Seller's Note</h2>
-              <p className="font-semibold text-lg md:text-xl text-slate-300 leading-snug max-w-3xl">
-                2017 Ram 1500 Crew Cab Night Edition 4x4 – Fully Loaded, Zero Codes, Bulletproofed Suspension
+              <p className="font-semibold text-lg md:text-xl text-slate-300 leading-snug max-w-3xl whitespace-pre-wrap">
+                {truckDetails.subtitle || "2017 Ram 1500 Crew Cab Night Edition 4x4 – Fully Loaded, Zero Codes, Bulletproofed Suspension"}
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 mt-6">
@@ -137,7 +203,7 @@ export default function LandingPage() {
                 </div>
                 <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 backdrop-blur-sm">
                   <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">Original MSRP</p>
-                  <p className="text-2xl font-bold text-slate-300">$59,895</p>
+                  <p className="text-2xl font-bold text-slate-300">{truckDetails.msrp || "$59,895"}</p>
                 </div>
               </div>
             </div>
@@ -145,9 +211,15 @@ export default function LandingPage() {
             {/* Content Area */}
             <div className="p-8 md:p-10">
               <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed text-sm md:text-base">
-                <div className="mb-10 text-lg text-slate-800 space-y-4">
-                  <p>If you are looking for a fully-loaded, turn-key truck that has already had all the expensive, common Ram maintenance issues taken care of, this is it.</p>
-                  <p>This is a rare Flame Red Night Edition with almost $16,000 in factory upgrades. It has been meticulously cared for, mechanically vetted, and is ready for its next owner.</p>
+                <div className="mb-10 text-lg text-slate-800 space-y-4 whitespace-pre-wrap">
+                  {truckDetails.sellersNoteIntro ? (
+                    <p>{truckDetails.sellersNoteIntro}</p>
+                  ) : (
+                    <>
+                      <p>If you are looking for a fully-loaded, turn-key truck that has already had all the expensive, common Ram maintenance issues taken care of, this is it.</p>
+                      <p>This is a rare Flame Red Night Edition with almost $16,000 in factory upgrades. It has been meticulously cared for, mechanically vetted, and is ready for its next owner.</p>
+                    </>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
@@ -159,8 +231,14 @@ export default function LandingPage() {
                       </div>
                       <h3 className="text-lg md:text-xl font-bold text-slate-900 m-0">The Peace of Mind Guarantee</h3>
                     </div>
-                    <p className="mb-3">Let's talk about the elephant in the room with 4th Gen Rams: the factory air suspension. It's notorious for failing and costing thousands to fix. I have already paid to have the factory air ride professionally deleted and converted to a premium conventional coil/shock suspension. You get the perfect ride height with zero anxiety about winter suspension failures.</p>
-                    <p>Additionally, this truck was just evaluated by a major commercial truck buying center. It was thoroughly test-driven and throws ZERO diagnostic codes.</p>
+                    {truckDetails.peaceOfMindText ? (
+                       <div className="whitespace-pre-wrap">{truckDetails.peaceOfMindText}</div>
+                    ) : (
+                      <>
+                        <p className="mb-3">Let's talk about the elephant in the room with 4th Gen Rams: the factory air suspension. It's notorious for failing and costing thousands to fix. I have already paid to have the factory air ride professionally deleted and converted to a premium conventional coil/shock suspension. You get the perfect ride height with zero anxiety about winter suspension failures.</p>
+                        <p>Additionally, this truck was just evaluated by a major commercial truck buying center. It was thoroughly test-driven and throws ZERO diagnostic codes.</p>
+                      </>
+                    )}
                   </div>
 
                   {/* Recent Maintenance */}
@@ -171,13 +249,19 @@ export default function LandingPage() {
                       </div>
                       <h3 className="text-lg md:text-xl font-bold text-slate-900 m-0">Recent Maintenance & Upgrades</h3>
                     </div>
-                    <p className="mb-3">I don't believe in passing off worn-out parts to the next guy. In preparation for this sale, I have invested heavily in making sure this truck is perfect:</p>
-                    <ul className="list-disc pl-5 space-y-2 text-slate-700 marker:text-slate-400">
-                      <li><strong>Brand New Tires</strong></li>
-                      <li><strong>Brand New Hubs and Bearings</strong></li>
-                      <li><strong>Bulletproofed Suspension</strong> (Air-ride delete mentioned above)</li>
-                      <li><strong>Fresh Cosmetic Restoration:</strong> Just got out of the body shop to have minor scratches and door dings professionally removed. The exterior looks phenomenal. (Note: Driver's seat has minimal wear along the outside seam, typical for the year, but the interior is otherwise immaculate).</li>
-                    </ul>
+                    {truckDetails.maintenanceText ? (
+                      <div className="whitespace-pre-wrap">{truckDetails.maintenanceText}</div>
+                    ) : (
+                      <>
+                        <p className="mb-3">I don't believe in passing off worn-out parts to the next guy. In preparation for this sale, I have invested heavily in making sure this truck is perfect:</p>
+                        <ul className="list-disc pl-5 space-y-2 text-slate-700 marker:text-slate-400">
+                          <li><strong>Brand New Tires</strong></li>
+                          <li><strong>Brand New Hubs and Bearings</strong></li>
+                          <li><strong>Bulletproofed Suspension</strong> (Air-ride delete mentioned above)</li>
+                          <li><strong>Fresh Cosmetic Restoration:</strong> Just got out of the body shop to have minor scratches and door dings professionally removed. The exterior looks phenomenal. (Note: Driver's seat has minimal wear along the outside seam, typical for the year, but the interior is otherwise immaculate).</li>
+                        </ul>
+                      </>
+                    )}
                   </div>
 
                   {/* Utility & Towing */}
@@ -188,13 +272,19 @@ export default function LandingPage() {
                       </div>
                       <h3 className="text-lg md:text-xl font-bold text-slate-900 m-0">The Ultimate Utility & Towing Rig</h3>
                     </div>
-                    <p className="mb-3">This truck isn't just a pavement princess; it is optioned for serious work.</p>
-                    <ul className="list-disc pl-5 space-y-2 text-slate-700 marker:text-slate-400">
-                      <li><strong>RamBox® Cargo Management System:</strong> Lockable, weatherproof, and drainable bedside boxes.</li>
-                      <li><strong>Hidden In-Floor Storage:</strong> The rear footwells feature insulated, hidden storage bins.</li>
-                      <li><strong>Heavy Duty Towing:</strong> 5.7L HEMI V8 paired with the highly desirable 3.92 Rear Axle Ratio and Anti-Spin Differential. Includes factory Trailer Brake Control and Class IV Hitch.</li>
-                      <li><strong>Bed Setup:</strong> Factory Spray-in Bedliner, Tri-Fold Tonneau Cover, and Bed Cargo Divider/Extender.</li>
-                    </ul>
+                    {truckDetails.utilityTowingText ? (
+                      <div className="whitespace-pre-wrap">{truckDetails.utilityTowingText}</div>
+                    ) : (
+                      <>
+                        <p className="mb-3">This truck isn't just a pavement princess; it is optioned for serious work.</p>
+                        <ul className="list-disc pl-5 space-y-2 text-slate-700 marker:text-slate-400">
+                          <li><strong>RamBox® Cargo Management System:</strong> Lockable, weatherproof, and drainable bedside boxes.</li>
+                          <li><strong>Hidden In-Floor Storage:</strong> The rear footwells feature insulated, hidden storage bins.</li>
+                          <li><strong>Heavy Duty Towing:</strong> 5.7L HEMI V8 paired with the highly desirable 3.92 Rear Axle Ratio and Anti-Spin Differential. Includes factory Trailer Brake Control and Class IV Hitch.</li>
+                          <li><strong>Bed Setup:</strong> Factory Spray-in Bedliner, Tri-Fold Tonneau Cover, and Bed Cargo Divider/Extender.</li>
+                        </ul>
+                      </>
+                    )}
                   </div>
 
                   {/* Luxury Options */}
@@ -205,23 +295,35 @@ export default function LandingPage() {
                       </div>
                       <h3 className="text-lg md:text-xl font-bold text-slate-900 m-0">Luxury Options (Original $60k MSRP)</h3>
                     </div>
-                    <p className="mb-3">You will be hard-pressed to find a truck with more interior features than this one:</p>
-                    <ul className="list-disc pl-5 space-y-2 text-slate-700 marker:text-slate-400">
-                      <li><strong>Interior Comfort:</strong> Black Leather-Trimmed Bucket Seats that are both Heated and Ventilated (Cooled). Heated Leather steering wheel. Power Sunroof.</li>
-                      <li><strong>Tech & Audio:</strong> Uconnect 8.4 NAV with Apple/Android capability, backed by the 9-Speaker Alpine Premium Audio System with Subwoofer.</li>
-                      <li><strong>Exterior Styling:</strong> Sport Performance Hood, Flat Black Badging, Black Painted Honeycomb Grille, 20-inch Black Aluminum Wheels, and Dual Rear Exhaust.</li>
-                      <li><strong>Convenience:</strong> Keyless Enter 'n Go, Remote Start, Rain-Sensitive Wipers, Auto High-Beams, and ParkSense Front/Rear Park Assist with Backup Camera.</li>
-                    </ul>
+                    {truckDetails.luxuryOptionsText ? (
+                      <div className="whitespace-pre-wrap">{truckDetails.luxuryOptionsText}</div>
+                    ) : (
+                      <>
+                        <p className="mb-3">You will be hard-pressed to find a truck with more interior features than this one:</p>
+                        <ul className="list-disc pl-5 space-y-2 text-slate-700 marker:text-slate-400">
+                          <li><strong>Interior Comfort:</strong> Black Leather-Trimmed Bucket Seats that are both Heated and Ventilated (Cooled). Heated Leather steering wheel. Power Sunroof.</li>
+                          <li><strong>Tech & Audio:</strong> Uconnect 8.4 NAV with Apple/Android capability, backed by the 9-Speaker Alpine Premium Audio System with Subwoofer.</li>
+                          <li><strong>Exterior Styling:</strong> Sport Performance Hood, Flat Black Badging, Black Painted Honeycomb Grille, 20-inch Black Aluminum Wheels, and Dual Rear Exhaust.</li>
+                          <li><strong>Convenience:</strong> Keyless Enter 'n Go, Remote Start, Rain-Sensitive Wipers, Auto High-Beams, and ParkSense Front/Rear Park Assist with Backup Camera.</li>
+                        </ul>
+                      </>
+                    )}
                   </div>
                 </div>
 
                 <div className="mt-12 bg-slate-50 border border-slate-200 rounded-xl p-6 md:p-8 text-center">
-                  <p className="text-lg font-medium text-slate-900 mb-4">
-                    This truck represents a massive value. Dealers are selling standard, stripped-down trades for this price. KBB Private Party values this exact spec and condition at over $23,500.
-                  </p>
-                  <p className="text-base text-slate-700 mb-6">
-                    Clean title in hand. Serious inquiries only. Come take it for a test drive and see for yourself—you won't find a better-equipped, better-sorted 2017 Ram on the market right now.
-                  </p>
+                  {truckDetails.ctaText ? (
+                    <div className="whitespace-pre-wrap mb-6 text-slate-700">{truckDetails.ctaText}</div>
+                  ) : (
+                    <>
+                      <p className="text-lg font-medium text-slate-900 mb-4">
+                        This truck represents a massive value. Dealers are selling standard, stripped-down trades for this price. KBB Private Party values this exact spec and condition at over $23,500.
+                      </p>
+                      <p className="text-base text-slate-700 mb-6">
+                        Clean title in hand. Serious inquiries only. Come take it for a test drive and see for yourself—you won't find a better-equipped, better-sorted 2017 Ram on the market right now.
+                      </p>
+                    </>
+                  )}
                   <button 
                     onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                     className="inline-flex items-center justify-center px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors"
@@ -241,26 +343,26 @@ export default function LandingPage() {
           <div className="bg-white border border-slate-200 rounded-2xl p-8 md:p-10 shadow-sm">
             <div className="max-w-3xl mb-8">
               <h2 className="text-2xl font-bold text-slate-900 mb-3">Mechanical Integrity & Upgrades</h2>
-              <p className="text-sm text-slate-500 leading-relaxed">
-                Most used Rams in this mileage bracket face expensive repairs. We have proactively addressed the two most common "pain points" for this generation, ensuring this truck is turn-key for the next 100,000 miles.
+              <p className="text-sm text-slate-500 leading-relaxed whitespace-pre-wrap">
+                {truckDetails.mechanicalIntegrityIntro || 'Most used Rams in this mileage bracket face expensive repairs. We have proactively addressed the two most common "pain points" for this generation, ensuring this truck is turn-key for the next 100,000 miles.'}
               </p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-slate-50 p-5 rounded-xl border border-dashed border-slate-300">
                 <div className="h-1 bg-red-600 w-8 mb-4"></div>
-                <h3 className="text-sm font-semibold text-slate-900 mb-2">Air Suspension Delete</h3>
-                <p className="text-xs text-slate-500 leading-relaxed">Converted to heavy-duty regular shocks. Eliminates the risk of the $3,000 factory air-ride failure common in cold climates.</p>
+                <h3 className="text-sm font-semibold text-slate-900 mb-2">{truckDetails.mechanicalItem1Title || 'Air Suspension Delete'}</h3>
+                <p className="text-xs text-slate-500 leading-relaxed whitespace-pre-wrap">{truckDetails.mechanicalItem1Text || 'Converted to heavy-duty regular shocks. Eliminates the risk of the $3,000 factory air-ride failure common in cold climates.'}</p>
               </div>
               <div className="bg-slate-50 p-5 rounded-xl border border-dashed border-slate-300">
                 <div className="h-1 bg-red-600 w-8 mb-4"></div>
-                <h3 className="text-sm font-semibold text-slate-900 mb-2">Drivetrain Refresh</h3>
-                <p className="text-xs text-slate-500 leading-relaxed">Brand new hubs and bearings installed. Smooth, quiet, and vibration-free operation at highway speeds.</p>
+                <h3 className="text-sm font-semibold text-slate-900 mb-2">{truckDetails.mechanicalItem2Title || 'Drivetrain Refresh'}</h3>
+                <p className="text-xs text-slate-500 leading-relaxed whitespace-pre-wrap">{truckDetails.mechanicalItem2Text || 'Brand new hubs and bearings installed. Smooth, quiet, and vibration-free operation at highway speeds.'}</p>
               </div>
               <div className="bg-slate-50 p-5 rounded-xl border border-dashed border-slate-300">
                 <div className="h-1 bg-red-600 w-8 mb-4"></div>
-                <h3 className="text-sm font-semibold text-slate-900 mb-2">New All-Terrain Rubber</h3>
-                <p className="text-xs text-slate-500 leading-relaxed">Fresh tires provide maximum traction and improved ride quality. Zero immediate maintenance needed.</p>
+                <h3 className="text-sm font-semibold text-slate-900 mb-2">{truckDetails.mechanicalItem3Title || 'New All-Terrain Rubber'}</h3>
+                <p className="text-xs text-slate-500 leading-relaxed whitespace-pre-wrap">{truckDetails.mechanicalItem3Text || 'Fresh tires provide maximum traction and improved ride quality. Zero immediate maintenance needed.'}</p>
               </div>
             </div>
           </div>
@@ -270,8 +372,8 @@ export default function LandingPage() {
         <section id="market" className="mb-16 pt-8">
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-slate-900 mb-2">Market Valuation Context</h2>
-            <p className="text-sm text-slate-500 max-w-2xl">
-              While algorithmic offers from dealers focus on wholesale turnover, a true market analysis illustrates the replacement cost for a vehicle of this specific configuration and condition. As a buyer, you must understand the difference between purchasing a fully sorted vehicle from a private party versus walking onto a retail dealership lot. Finding an equivalent 2017 Ram 1500 Night Edition in Good to Excellent condition with roughly 101,769 miles is currently incredibly difficult, driving up its intrinsic value.
+            <p className="text-sm text-slate-500 max-w-2xl whitespace-pre-wrap">
+              {truckDetails.marketValuationIntro || `While algorithmic offers from dealers focus on wholesale turnover, a true market analysis illustrates the replacement cost for a vehicle of this specific configuration and condition. As a buyer, you must understand the difference between purchasing a fully sorted vehicle from a private party versus walking onto a retail dealership lot. Finding an equivalent 2017 Ram 1500 Night Edition in Good to Excellent condition with roughly ${truckDetails.mileage} miles is currently incredibly difficult, driving up its intrinsic value.`}
             </p>
           </div>
 
@@ -306,20 +408,34 @@ export default function LandingPage() {
             <div className="space-y-4">
               <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-sm">
                 <span className="text-[10px] uppercase text-slate-400 font-bold block mb-1">Dealer Retail Reality</span>
-                <p className="text-sm font-semibold text-slate-900 mb-1">$25,500 - $26,500+</p>
-                <p className="text-xs text-slate-500 leading-relaxed">Dealerships price these trucks at a premium, then frequently add mandatory documentation fees, prep fees, and taxes that drive the "out-the-door" cost even higher.</p>
+                {truckDetails.marketDealerReality ? (
+                  <div className="text-xs text-slate-500 leading-relaxed whitespace-pre-wrap">{truckDetails.marketDealerReality}</div>
+                ) : (
+                  <>
+                    <p className="text-sm font-semibold text-slate-900 mb-1">$25,500 - $26,500+</p>
+                    <p className="text-xs text-slate-500 leading-relaxed">Dealerships price these trucks at a premium, then frequently add mandatory documentation fees, prep fees, and taxes that drive the "out-the-door" cost even higher.</p>
+                  </>
+                )}
               </div>
               <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-sm">
                 <span className="text-[10px] uppercase text-slate-400 font-bold block mb-1">KBB Private Party Value</span>
-                <p className="text-sm font-semibold text-slate-900 mb-1">$23,652 Target Value</p>
-                <p className="text-xs text-slate-500 leading-relaxed">The specific target value based on mileage and standard options. The recognized fair market range is $22,552 - $24,752 for a private transaction in Good condition.</p>
+                {truckDetails.marketKbbValue ? (
+                  <div className="text-xs text-slate-500 leading-relaxed whitespace-pre-wrap">{truckDetails.marketKbbValue}</div>
+                ) : (
+                  <>
+                    <p className="text-sm font-semibold text-slate-900 mb-1">$23,652 Target Value</p>
+                    <p className="text-xs text-slate-500 leading-relaxed">The specific target value based on mileage and standard options. The recognized fair market range is $22,552 - $24,752 for a private transaction in Good condition.</p>
+                  </>
+                )}
               </div>
               <div className="flex flex-col p-5 bg-slate-900 text-white rounded-xl shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-400">This Night Edition</span>
                   <span className="text-xl font-bold text-red-600">${truckDetails.price}</span>
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed">A fair, data-backed price that reflects the truck's pristine mechanical state and thousands in recent maintenance.</p>
+                <p className="text-xs text-slate-400 leading-relaxed whitespace-pre-wrap">
+                  {truckDetails.marketThisTruck || "A fair, data-backed price that reflects the truck's pristine mechanical state and thousands in recent maintenance."}
+                </p>
               </div>
             </div>
           </div>
@@ -332,30 +448,30 @@ export default function LandingPage() {
             <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:-translate-y-1 transition-transform">
               <div className="flex items-center gap-3 mb-3">
                 <span className="text-red-600 font-bold italic text-lg">✔</span>
-                <h3 className="text-sm font-bold text-slate-900">RAM Boxes</h3>
+                <h3 className="text-sm font-bold text-slate-900">{truckDetails.highlight1Title || 'RAM Boxes'}</h3>
               </div>
-              <p className="text-xs text-slate-500 leading-relaxed">Integrated, lockable, and lighted storage bins built into the bed rails.</p>
+              <p className="text-xs text-slate-500 leading-relaxed whitespace-pre-wrap">{truckDetails.highlight1Text || 'Integrated, lockable, and lighted storage bins built into the bed rails.'}</p>
             </div>
             <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:-translate-y-1 transition-transform">
               <div className="flex items-center gap-3 mb-3">
                 <span className="text-red-600 font-bold italic text-lg">✔</span>
-                <h3 className="text-sm font-bold text-slate-900">Hidden Storage</h3>
+                <h3 className="text-sm font-bold text-slate-900">{truckDetails.highlight2Title || 'Hidden Storage'}</h3>
               </div>
-              <p className="text-xs text-slate-500 leading-relaxed">Discrete storage boxes located in the rear footwells. Ideal for keeping valuables out of sight.</p>
+              <p className="text-xs text-slate-500 leading-relaxed whitespace-pre-wrap">{truckDetails.highlight2Text || 'Discrete storage boxes located in the rear footwells. Ideal for keeping valuables out of sight.'}</p>
             </div>
             <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:-translate-y-1 transition-transform">
               <div className="flex items-center gap-3 mb-3">
                 <span className="text-red-600 font-bold italic text-lg">✔</span>
-                <h3 className="text-sm font-bold text-slate-900">Max Tow Package</h3>
+                <h3 className="text-sm font-bold text-slate-900">{truckDetails.highlight3Title || 'Max Tow Package'}</h3>
               </div>
-              <p className="text-xs text-slate-500 leading-relaxed">Factory-installed hitch and trailer wiring. Ready to haul trailers, boats, or campers.</p>
+              <p className="text-xs text-slate-500 leading-relaxed whitespace-pre-wrap">{truckDetails.highlight3Text || 'Factory-installed hitch and trailer wiring. Ready to haul trailers, boats, or campers.'}</p>
             </div>
             <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:-translate-y-1 transition-transform">
               <div className="flex items-center gap-3 mb-3">
                 <span className="text-red-600 font-bold italic text-lg">✔</span>
-                <h3 className="text-sm font-bold text-slate-900">Premium Interior</h3>
+                <h3 className="text-sm font-bold text-slate-900">{truckDetails.highlight4Title || 'Premium Interior'}</h3>
               </div>
-              <p className="text-xs text-slate-500 leading-relaxed">Fully loaded interior with only minimal wear on driver seat seam. Clean, non-smoker.</p>
+              <p className="text-xs text-slate-500 leading-relaxed whitespace-pre-wrap">{truckDetails.highlight4Text || 'Fully loaded interior with only minimal wear on driver seat seam. Clean, non-smoker.'}</p>
             </div>
           </div>
         </section>

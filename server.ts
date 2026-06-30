@@ -39,10 +39,42 @@ app.get('/api/truck-details', async (req, res) => {
 
 app.post('/api/truck-details', async (req, res) => {
   try {
-    const { mileage, price, windowStickerUrl, carfaxReportUrl } = req.body;
-    await db.update(truckDetails)
-      .set({ mileage, price, windowStickerUrl, carfaxReportUrl })
-      .where(eq(truckDetails.id, 1));
+    const { 
+      mileage, price, windowStickerUrl, carfaxReportUrl, kbbReportUrl, smogReportUrl,
+      subtitle, msrp, sellersNoteIntro, peaceOfMindText, maintenanceText, utilityTowingText,
+      luxuryOptionsText, ctaText, mechanicalIntegrityIntro, mechanicalItem1Title, mechanicalItem1Text,
+      mechanicalItem2Title, mechanicalItem2Text, mechanicalItem3Title, mechanicalItem3Text,
+      marketValuationIntro, marketDealerReality, marketKbbValue, marketThisTruck,
+      highlight1Title, highlight1Text, highlight2Title, highlight2Text,
+      highlight3Title, highlight3Text, highlight4Title, highlight4Text
+    } = req.body;
+    
+    // Check if the record exists first
+    const existing = await db.select().from(truckDetails).where(eq(truckDetails.id, 1));
+    if (existing.length === 0) {
+      await db.insert(truckDetails).values({ 
+        id: 1, 
+        mileage, price, windowStickerUrl, carfaxReportUrl, kbbReportUrl, smogReportUrl,
+        subtitle, msrp, sellersNoteIntro, peaceOfMindText, maintenanceText, utilityTowingText,
+        luxuryOptionsText, ctaText, mechanicalIntegrityIntro, mechanicalItem1Title, mechanicalItem1Text,
+        mechanicalItem2Title, mechanicalItem2Text, mechanicalItem3Title, mechanicalItem3Text,
+        marketValuationIntro, marketDealerReality, marketKbbValue, marketThisTruck,
+        highlight1Title, highlight1Text, highlight2Title, highlight2Text,
+        highlight3Title, highlight3Text, highlight4Title, highlight4Text
+      });
+    } else {
+      await db.update(truckDetails)
+        .set({ 
+          mileage, price, windowStickerUrl, carfaxReportUrl, kbbReportUrl, smogReportUrl,
+          subtitle, msrp, sellersNoteIntro, peaceOfMindText, maintenanceText, utilityTowingText,
+          luxuryOptionsText, ctaText, mechanicalIntegrityIntro, mechanicalItem1Title, mechanicalItem1Text,
+          mechanicalItem2Title, mechanicalItem2Text, mechanicalItem3Title, mechanicalItem3Text,
+          marketValuationIntro, marketDealerReality, marketKbbValue, marketThisTruck,
+          highlight1Title, highlight1Text, highlight2Title, highlight2Text,
+          highlight3Title, highlight3Text, highlight4Title, highlight4Text
+        })
+        .where(eq(truckDetails.id, 1));
+    }
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: "Failed to update truck details" });

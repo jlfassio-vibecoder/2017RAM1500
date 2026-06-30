@@ -36,6 +36,35 @@ interface TruckDetails {
   price: string;
   windowStickerUrl?: string;
   carfaxReportUrl?: string;
+  kbbReportUrl?: string;
+  smogReportUrl?: string;
+  subtitle?: string;
+  msrp?: string;
+  sellersNoteIntro?: string;
+  peaceOfMindText?: string;
+  maintenanceText?: string;
+  utilityTowingText?: string;
+  luxuryOptionsText?: string;
+  ctaText?: string;
+  mechanicalIntegrityIntro?: string;
+  mechanicalItem1Title?: string;
+  mechanicalItem1Text?: string;
+  mechanicalItem2Title?: string;
+  mechanicalItem2Text?: string;
+  mechanicalItem3Title?: string;
+  mechanicalItem3Text?: string;
+  marketValuationIntro?: string;
+  marketDealerReality?: string;
+  marketKbbValue?: string;
+  marketThisTruck?: string;
+  highlight1Title?: string;
+  highlight1Text?: string;
+  highlight2Title?: string;
+  highlight2Text?: string;
+  highlight3Title?: string;
+  highlight3Text?: string;
+  highlight4Title?: string;
+  highlight4Text?: string;
 }
 
 export default function SellerDashboard() {
@@ -51,10 +80,42 @@ export default function SellerDashboard() {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   
   // Details state
-  const [truckDetails, setTruckDetails] = useState<TruckDetails>({ mileage: '', price: '' });
+  const [truckDetails, setTruckDetails] = useState<TruckDetails>({ 
+    mileage: '', 
+    price: '',
+    subtitle: '',
+    msrp: '',
+    sellersNoteIntro: '',
+    peaceOfMindText: '',
+    maintenanceText: '',
+    utilityTowingText: '',
+    luxuryOptionsText: '',
+    ctaText: '',
+    mechanicalIntegrityIntro: '',
+    mechanicalItem1Title: '',
+    mechanicalItem1Text: '',
+    mechanicalItem2Title: '',
+    mechanicalItem2Text: '',
+    mechanicalItem3Title: '',
+    mechanicalItem3Text: '',
+    marketValuationIntro: '',
+    marketDealerReality: '',
+    marketKbbValue: '',
+    marketThisTruck: '',
+    highlight1Title: '',
+    highlight1Text: '',
+    highlight2Title: '',
+    highlight2Text: '',
+    highlight3Title: '',
+    highlight3Text: '',
+    highlight4Title: '',
+    highlight4Text: '',
+  });
   const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const carfaxInputRef = useRef<HTMLInputElement>(null);
+  const kbbInputRef = useRef<HTMLInputElement>(null);
+  const smogInputRef = useRef<HTMLInputElement>(null);
 
   const socketRef = useRef<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -89,6 +150,40 @@ export default function SellerDashboard() {
     reader.onload = (event) => {
       const base64String = event.target?.result as string;
       setTruckDetails(prev => ({ ...prev, carfaxReportUrl: base64String }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleKbbUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("File size exceeds 5MB limit.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64String = event.target?.result as string;
+      setTruckDetails(prev => ({ ...prev, kbbReportUrl: base64String }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSmogUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("File size exceeds 5MB limit.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64String = event.target?.result as string;
+      setTruckDetails(prev => ({ ...prev, smogReportUrl: base64String }));
     };
     reader.readAsDataURL(file);
   };
@@ -199,7 +294,7 @@ export default function SellerDashboard() {
 
     const messageData = {
       sessionId: activeSession,
-      sender: 'seller',
+      sender: 'seller' as 'seller' | 'buyer',
       content: inputValue.trim(),
     };
 
@@ -502,9 +597,109 @@ export default function SellerDashboard() {
                     <p className="text-xs text-slate-500 mt-2">This is displayed in the Seller's Note and Market Valuation sections.</p>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Window Sticker Document</label>
-                    <input
+                  <div className="pt-6 border-t border-slate-100">
+                    <h3 className="text-lg font-bold text-slate-900 mb-4">Overview & Seller's Note</h3>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Subtitle / Tagline</label>
+                        <input type="text" value={truckDetails.subtitle || ''} onChange={e => setTruckDetails({...truckDetails, subtitle: e.target.value})} className="w-full px-4 py-3 border border-slate-300 rounded-lg outline-none text-slate-900" placeholder="2017 Ram 1500 Crew Cab Night Edition..." />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Original MSRP</label>
+                        <input type="text" value={truckDetails.msrp || ''} onChange={e => setTruckDetails({...truckDetails, msrp: e.target.value})} className="w-full px-4 py-3 border border-slate-300 rounded-lg outline-none text-slate-900" placeholder="$59,895" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Seller's Note Intro Paragraphs</label>
+                        <textarea value={truckDetails.sellersNoteIntro || ''} onChange={e => setTruckDetails({...truckDetails, sellersNoteIntro: e.target.value})} className="w-full px-4 py-3 border border-slate-300 rounded-lg outline-none text-slate-900 min-h-[100px]" placeholder="If you are looking for a fully-loaded..." />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Peace of Mind Guarantee Text</label>
+                        <textarea value={truckDetails.peaceOfMindText || ''} onChange={e => setTruckDetails({...truckDetails, peaceOfMindText: e.target.value})} className="w-full px-4 py-3 border border-slate-300 rounded-lg outline-none text-slate-900 min-h-[100px]" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Recent Maintenance Text/List</label>
+                        <textarea value={truckDetails.maintenanceText || ''} onChange={e => setTruckDetails({...truckDetails, maintenanceText: e.target.value})} className="w-full px-4 py-3 border border-slate-300 rounded-lg outline-none text-slate-900 min-h-[100px]" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Utility & Towing Text/List</label>
+                        <textarea value={truckDetails.utilityTowingText || ''} onChange={e => setTruckDetails({...truckDetails, utilityTowingText: e.target.value})} className="w-full px-4 py-3 border border-slate-300 rounded-lg outline-none text-slate-900 min-h-[100px]" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Luxury Options Text/List</label>
+                        <textarea value={truckDetails.luxuryOptionsText || ''} onChange={e => setTruckDetails({...truckDetails, luxuryOptionsText: e.target.value})} className="w-full px-4 py-3 border border-slate-300 rounded-lg outline-none text-slate-900 min-h-[100px]" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Call to Action Box Text</label>
+                        <textarea value={truckDetails.ctaText || ''} onChange={e => setTruckDetails({...truckDetails, ctaText: e.target.value})} className="w-full px-4 py-3 border border-slate-300 rounded-lg outline-none text-slate-900 min-h-[100px]" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-6 border-t border-slate-100">
+                    <h3 className="text-lg font-bold text-slate-900 mb-4">Mechanical Integrity & Upgrades</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Section Intro Text</label>
+                        <textarea value={truckDetails.mechanicalIntegrityIntro || ''} onChange={e => setTruckDetails({...truckDetails, mechanicalIntegrityIntro: e.target.value})} className="w-full px-4 py-3 border border-slate-300 rounded-lg outline-none text-slate-900 min-h-[80px]" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <input type="text" value={truckDetails.mechanicalItem1Title || ''} onChange={e => setTruckDetails({...truckDetails, mechanicalItem1Title: e.target.value})} className="px-4 py-2 border border-slate-300 rounded-lg" placeholder="Item 1 Title" />
+                        <textarea value={truckDetails.mechanicalItem1Text || ''} onChange={e => setTruckDetails({...truckDetails, mechanicalItem1Text: e.target.value})} className="px-4 py-2 border border-slate-300 rounded-lg min-h-[60px]" placeholder="Item 1 Text" />
+                        
+                        <input type="text" value={truckDetails.mechanicalItem2Title || ''} onChange={e => setTruckDetails({...truckDetails, mechanicalItem2Title: e.target.value})} className="px-4 py-2 border border-slate-300 rounded-lg" placeholder="Item 2 Title" />
+                        <textarea value={truckDetails.mechanicalItem2Text || ''} onChange={e => setTruckDetails({...truckDetails, mechanicalItem2Text: e.target.value})} className="px-4 py-2 border border-slate-300 rounded-lg min-h-[60px]" placeholder="Item 2 Text" />
+                        
+                        <input type="text" value={truckDetails.mechanicalItem3Title || ''} onChange={e => setTruckDetails({...truckDetails, mechanicalItem3Title: e.target.value})} className="px-4 py-2 border border-slate-300 rounded-lg" placeholder="Item 3 Title" />
+                        <textarea value={truckDetails.mechanicalItem3Text || ''} onChange={e => setTruckDetails({...truckDetails, mechanicalItem3Text: e.target.value})} className="px-4 py-2 border border-slate-300 rounded-lg min-h-[60px]" placeholder="Item 3 Text" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-6 border-t border-slate-100">
+                    <h3 className="text-lg font-bold text-slate-900 mb-4">Market Valuation Context</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Intro Text</label>
+                        <textarea value={truckDetails.marketValuationIntro || ''} onChange={e => setTruckDetails({...truckDetails, marketValuationIntro: e.target.value})} className="w-full px-4 py-3 border border-slate-300 rounded-lg outline-none text-slate-900 min-h-[80px]" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Dealer Retail Reality Text</label>
+                        <textarea value={truckDetails.marketDealerReality || ''} onChange={e => setTruckDetails({...truckDetails, marketDealerReality: e.target.value})} className="w-full px-4 py-3 border border-slate-300 rounded-lg outline-none text-slate-900 min-h-[80px]" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">KBB Private Party Value Text</label>
+                        <textarea value={truckDetails.marketKbbValue || ''} onChange={e => setTruckDetails({...truckDetails, marketKbbValue: e.target.value})} className="w-full px-4 py-3 border border-slate-300 rounded-lg outline-none text-slate-900 min-h-[80px]" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">This Truck Text</label>
+                        <textarea value={truckDetails.marketThisTruck || ''} onChange={e => setTruckDetails({...truckDetails, marketThisTruck: e.target.value})} className="w-full px-4 py-3 border border-slate-300 rounded-lg outline-none text-slate-900 min-h-[80px]" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-6 border-t border-slate-100">
+                    <h3 className="text-lg font-bold text-slate-900 mb-4">Vehicle Highlights & Utility</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <input type="text" value={truckDetails.highlight1Title || ''} onChange={e => setTruckDetails({...truckDetails, highlight1Title: e.target.value})} className="px-4 py-2 border border-slate-300 rounded-lg" placeholder="Highlight 1 Title" />
+                      <textarea value={truckDetails.highlight1Text || ''} onChange={e => setTruckDetails({...truckDetails, highlight1Text: e.target.value})} className="px-4 py-2 border border-slate-300 rounded-lg min-h-[60px]" placeholder="Highlight 1 Text" />
+                      
+                      <input type="text" value={truckDetails.highlight2Title || ''} onChange={e => setTruckDetails({...truckDetails, highlight2Title: e.target.value})} className="px-4 py-2 border border-slate-300 rounded-lg" placeholder="Highlight 2 Title" />
+                      <textarea value={truckDetails.highlight2Text || ''} onChange={e => setTruckDetails({...truckDetails, highlight2Text: e.target.value})} className="px-4 py-2 border border-slate-300 rounded-lg min-h-[60px]" placeholder="Highlight 2 Text" />
+                      
+                      <input type="text" value={truckDetails.highlight3Title || ''} onChange={e => setTruckDetails({...truckDetails, highlight3Title: e.target.value})} className="px-4 py-2 border border-slate-300 rounded-lg" placeholder="Highlight 3 Title" />
+                      <textarea value={truckDetails.highlight3Text || ''} onChange={e => setTruckDetails({...truckDetails, highlight3Text: e.target.value})} className="px-4 py-2 border border-slate-300 rounded-lg min-h-[60px]" placeholder="Highlight 3 Text" />
+                      
+                      <input type="text" value={truckDetails.highlight4Title || ''} onChange={e => setTruckDetails({...truckDetails, highlight4Title: e.target.value})} className="px-4 py-2 border border-slate-300 rounded-lg" placeholder="Highlight 4 Title" />
+                      <textarea value={truckDetails.highlight4Text || ''} onChange={e => setTruckDetails({...truckDetails, highlight4Text: e.target.value})} className="px-4 py-2 border border-slate-300 rounded-lg min-h-[60px]" placeholder="Highlight 4 Text" />
+                    </div>
+                  </div>
+
+                  <div className="pt-6 border-t border-slate-100">
+                    <h3 className="text-lg font-bold text-slate-900 mb-4">Documents</h3>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">Window Sticker Document</label>
+                      <input
                       type="file"
                       ref={fileInputRef}
                       onChange={handleFileUpload}
@@ -578,7 +773,7 @@ export default function SellerDashboard() {
                           reader.readAsDataURL(file);
                         }
                       }}
-                      className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center flex flex-col items-center hover:bg-slate-50 transition-colors cursor-pointer group"
+                      className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center flex flex-col items-center hover:bg-slate-50 transition-colors cursor-pointer group mb-6"
                     >
                       {truckDetails.carfaxReportUrl ? (
                         <div className="flex flex-col items-center">
@@ -596,6 +791,103 @@ export default function SellerDashboard() {
                         </>
                       )}
                     </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Kelley Blue Book Report</label>
+                    <input
+                      type="file"
+                      ref={kbbInputRef}
+                      onChange={handleKbbUpload}
+                      className="hidden"
+                      accept=".pdf,image/png,image/jpeg"
+                    />
+                    <div 
+                      onClick={() => kbbInputRef.current?.click()}
+                      onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                          const file = e.dataTransfer.files[0];
+                          if (file.size > 5 * 1024 * 1024) {
+                            alert("File size exceeds 5MB limit.");
+                            return;
+                          }
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            setTruckDetails(prev => ({ ...prev, kbbReportUrl: event.target?.result as string }));
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center flex flex-col items-center hover:bg-slate-50 transition-colors cursor-pointer group mb-6"
+                    >
+                      {truckDetails.kbbReportUrl ? (
+                        <div className="flex flex-col items-center">
+                          <CheckCircle2 size={32} className="text-green-500 mb-3" />
+                          <p className="text-sm font-medium text-slate-900 mb-1">KBB Report uploaded</p>
+                          <p className="text-xs text-slate-500">Click or drag here to change report</p>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="bg-white p-3 rounded-full shadow-sm mb-3 group-hover:scale-110 transition-transform">
+                            <Upload size={20} className="text-slate-500" />
+                          </div>
+                          <p className="text-sm font-medium text-slate-900 mb-1">Click or drag to upload KBB Report</p>
+                          <p className="text-xs text-slate-500">PDF, PNG, or JPG (max. 5MB)</p>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Smog Report</label>
+                    <input
+                      type="file"
+                      ref={smogInputRef}
+                      onChange={handleSmogUpload}
+                      className="hidden"
+                      accept=".pdf,image/png,image/jpeg"
+                    />
+                    <div 
+                      onClick={() => smogInputRef.current?.click()}
+                      onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                          const file = e.dataTransfer.files[0];
+                          if (file.size > 5 * 1024 * 1024) {
+                            alert("File size exceeds 5MB limit.");
+                            return;
+                          }
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            setTruckDetails(prev => ({ ...prev, smogReportUrl: event.target?.result as string }));
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center flex flex-col items-center hover:bg-slate-50 transition-colors cursor-pointer group"
+                    >
+                      {truckDetails.smogReportUrl ? (
+                        <div className="flex flex-col items-center">
+                          <CheckCircle2 size={32} className="text-green-500 mb-3" />
+                          <p className="text-sm font-medium text-slate-900 mb-1">Smog Report uploaded</p>
+                          <p className="text-xs text-slate-500">Click or drag here to change report</p>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="bg-white p-3 rounded-full shadow-sm mb-3 group-hover:scale-110 transition-transform">
+                            <Upload size={20} className="text-slate-500" />
+                          </div>
+                          <p className="text-sm font-medium text-slate-900 mb-1">Click or drag to upload Smog Report</p>
+                          <p className="text-xs text-slate-500">PDF, PNG, or JPG (max. 5MB)</p>
+                        </>
+                      )}
+                    </div>
+                  </div>
                   </div>
 
                   <div className="pt-4 border-t border-slate-100">
