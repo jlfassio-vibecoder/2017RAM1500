@@ -3,6 +3,7 @@
   "appId": "1:363110423518:web:55313940c7cfa04e2ddb4f",
   "apiKey": "AIzaSyDiulmZibUH7myJjYW41tfCq6hcuYO_dmc",
   "authDomain": "ai-workout-generator-hub.firebaseapp.com",
+  "firestoreDatabaseId": "ai-studio-ram1500-a6aad1c3-783c-48e0-a179-f80c48018571",
   "storageBucket": "ai-workout-generator-hub.firebasestorage.app",
   "messagingSenderId": "363110423518",
   "measurementId": ""

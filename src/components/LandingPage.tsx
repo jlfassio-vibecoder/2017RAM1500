@@ -4,6 +4,7 @@ import { FileText, Menu, X } from 'lucide-react';
 import ChatWidget from './ChatWidget';
 import Gallery from './Gallery';
 import ContactForm from './ContactForm';
+import ImageCarousel from './ImageCarousel';
 import truckPhoto from '../assets/images/red_truck_snow_1782740280647.jpg';
 
 export default function LandingPage() {
@@ -178,6 +179,29 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <ImageCarousel />
+
+        {/* Walkaround Video Section */}
+        <section className="mb-16 pt-4">
+          <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm p-6 md:p-8 text-center">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">Detailed Walkaround</h2>
+            <p className="text-slate-600 mb-6 max-w-2xl mx-auto">
+              Take a closer look at the exterior, interior, and engine bay in this comprehensive 3-minute walkaround video.
+            </p>
+            <div className="w-full max-w-4xl mx-auto aspect-video rounded-xl overflow-hidden shadow-lg border border-slate-200 bg-slate-900">
+              <video 
+                controls 
+                preload="none" 
+                poster={truckDetails.videoPosterUrl || "https://picsum.photos/seed/ramVideoPoster/1280/720"}
+                className="w-full h-full object-cover"
+              >
+                <source src={truckDetails.videoUrl || "https://www.w3schools.com/html/mov_bbb.mp4"} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
             </div>
           </div>
         </section>

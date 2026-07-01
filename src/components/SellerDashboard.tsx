@@ -65,6 +65,8 @@ interface TruckDetails {
   highlight3Text?: string;
   highlight4Title?: string;
   highlight4Text?: string;
+  videoUrl?: string;
+  videoPosterUrl?: string;
 }
 
 export default function SellerDashboard() {
@@ -110,6 +112,8 @@ export default function SellerDashboard() {
     highlight3Text: '',
     highlight4Title: '',
     highlight4Text: '',
+    videoUrl: '',
+    videoPosterUrl: '',
   });
   const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -692,6 +696,32 @@ export default function SellerDashboard() {
                       
                       <input type="text" value={truckDetails.highlight4Title || ''} onChange={e => setTruckDetails({...truckDetails, highlight4Title: e.target.value})} className="px-4 py-2 border border-slate-300 rounded-lg" placeholder="Highlight 4 Title" />
                       <textarea value={truckDetails.highlight4Text || ''} onChange={e => setTruckDetails({...truckDetails, highlight4Text: e.target.value})} className="px-4 py-2 border border-slate-300 rounded-lg min-h-[60px]" placeholder="Highlight 4 Text" />
+                    </div>
+                  </div>
+
+                  <div className="pt-6 border-t border-slate-100">
+                    <h3 className="text-lg font-bold text-slate-900 mb-4">Video Settings</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Walkaround Video URL (MP4)</label>
+                        <input 
+                          type="text" 
+                          value={truckDetails.videoUrl || ''} 
+                          onChange={e => setTruckDetails({...truckDetails, videoUrl: e.target.value})} 
+                          className="w-full px-4 py-3 border border-slate-300 rounded-lg outline-none text-slate-900" 
+                          placeholder="https://example.com/video.mp4" 
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Video Poster / Thumbnail URL</label>
+                        <input 
+                          type="text" 
+                          value={truckDetails.videoPosterUrl || ''} 
+                          onChange={e => setTruckDetails({...truckDetails, videoPosterUrl: e.target.value})} 
+                          className="w-full px-4 py-3 border border-slate-300 rounded-lg outline-none text-slate-900" 
+                          placeholder="https://example.com/poster.jpg" 
+                        />
+                      </div>
                     </div>
                   </div>
 

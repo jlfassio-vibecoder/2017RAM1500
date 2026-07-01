@@ -3,9 +3,8 @@ import path from 'path';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { createServer as createViteServer } from 'vite';
-import { db } from './src/db/index.ts';
-import { truckDetails, messages, inquiries } from './src/db/schema.ts';
-import { eq, desc, and, sql } from 'drizzle-orm';
+import { doc, getDoc, setDoc, collection, addDoc, getDocs, query, orderBy, updateDoc, where } from 'firebase/firestore';
+import { db } from './src/firebase.ts';
 
 const app = express();
 const httpServer = createServer(app);
@@ -13,14 +12,16 @@ const io = new Server(httpServer);
 const PORT = process.env.PORT || 3000;
 
 // API Routes
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Initialize default truck details if not exists
 async function initTruckDetails() {
   try {
-    const existing = await db.select().from(truckDetails).where(eq(truckDetails.id, 1));
-    if (existing.length === 0) {
-      await db.insert(truckDetails).values({ id: 1, mileage: '78,000', price: '23,900' });
+    const docRef = doc(db, 'truckDetails', 'main');
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+      await setDoc(docRef, { mileage: '78,000', price: '23,900' });
     }
   } catch (error) {
     console.error("Error initializing truck details:", error);
@@ -30,53 +31,26 @@ initTruckDetails();
 
 app.get('/api/truck-details', async (req, res) => {
   try {
-    const details = await db.select().from(truckDetails).where(eq(truckDetails.id, 1));
-    res.json(details[0] || { mileage: '78,000', price: '23,900' });
+    const docRef = doc(db, 'truckDetails', 'main');
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      res.json(docSnap.data());
+    } else {
+      res.json({ mileage: '78,000', price: '23,900' });
+    }
   } catch (error) {
+    console.error("Fetch error:", error);
     res.status(500).json({ error: "Failed to fetch truck details" });
   }
 });
 
 app.post('/api/truck-details', async (req, res) => {
   try {
-    const { 
-      mileage, price, windowStickerUrl, carfaxReportUrl, kbbReportUrl, smogReportUrl,
-      subtitle, msrp, sellersNoteIntro, peaceOfMindText, maintenanceText, utilityTowingText,
-      luxuryOptionsText, ctaText, mechanicalIntegrityIntro, mechanicalItem1Title, mechanicalItem1Text,
-      mechanicalItem2Title, mechanicalItem2Text, mechanicalItem3Title, mechanicalItem3Text,
-      marketValuationIntro, marketDealerReality, marketKbbValue, marketThisTruck,
-      highlight1Title, highlight1Text, highlight2Title, highlight2Text,
-      highlight3Title, highlight3Text, highlight4Title, highlight4Text
-    } = req.body;
-    
-    // Check if the record exists first
-    const existing = await db.select().from(truckDetails).where(eq(truckDetails.id, 1));
-    if (existing.length === 0) {
-      await db.insert(truckDetails).values({ 
-        id: 1, 
-        mileage, price, windowStickerUrl, carfaxReportUrl, kbbReportUrl, smogReportUrl,
-        subtitle, msrp, sellersNoteIntro, peaceOfMindText, maintenanceText, utilityTowingText,
-        luxuryOptionsText, ctaText, mechanicalIntegrityIntro, mechanicalItem1Title, mechanicalItem1Text,
-        mechanicalItem2Title, mechanicalItem2Text, mechanicalItem3Title, mechanicalItem3Text,
-        marketValuationIntro, marketDealerReality, marketKbbValue, marketThisTruck,
-        highlight1Title, highlight1Text, highlight2Title, highlight2Text,
-        highlight3Title, highlight3Text, highlight4Title, highlight4Text
-      });
-    } else {
-      await db.update(truckDetails)
-        .set({ 
-          mileage, price, windowStickerUrl, carfaxReportUrl, kbbReportUrl, smogReportUrl,
-          subtitle, msrp, sellersNoteIntro, peaceOfMindText, maintenanceText, utilityTowingText,
-          luxuryOptionsText, ctaText, mechanicalIntegrityIntro, mechanicalItem1Title, mechanicalItem1Text,
-          mechanicalItem2Title, mechanicalItem2Text, mechanicalItem3Title, mechanicalItem3Text,
-          marketValuationIntro, marketDealerReality, marketKbbValue, marketThisTruck,
-          highlight1Title, highlight1Text, highlight2Title, highlight2Text,
-          highlight3Title, highlight3Text, highlight4Title, highlight4Text
-        })
-        .where(eq(truckDetails.id, 1));
-    }
+    const docRef = doc(db, 'truckDetails', 'main');
+    await setDoc(docRef, req.body, { merge: true });
     res.json({ success: true });
   } catch (error) {
+    console.error("Save error:", error);
     res.status(500).json({ error: "Failed to update truck details" });
   }
 });
@@ -84,7 +58,9 @@ app.post('/api/truck-details', async (req, res) => {
 app.post('/api/inquiries', async (req, res) => {
   try {
     const { name, phone, email, message } = req.body;
-    await db.insert(inquiries).values({ name, phone, email, message });
+    await addDoc(collection(db, 'inquiries'), { 
+      name, phone, email, message, timestamp: Date.now() 
+    });
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: "Failed to submit inquiry" });
@@ -93,7 +69,9 @@ app.post('/api/inquiries', async (req, res) => {
 
 app.get('/api/admin/inquiries', async (req, res) => {
   try {
-    const allInquiries = await db.select().from(inquiries).orderBy(desc(inquiries.timestamp));
+    const q = query(collection(db, 'inquiries'), orderBy('timestamp', 'desc'));
+    const querySnapshot = await getDocs(q);
+    const allInquiries = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     res.json(allInquiries);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch inquiries" });
@@ -103,7 +81,9 @@ app.get('/api/admin/inquiries', async (req, res) => {
 app.get('/api/messages/:sessionId', async (req, res) => {
   try {
     const { sessionId } = req.params;
-    const sessionMsgs = await db.select().from(messages).where(eq(messages.sessionId, sessionId)).orderBy(messages.timestamp);
+    const q = query(collection(db, 'messages'), where('sessionId', '==', sessionId), orderBy('timestamp', 'asc'));
+    const querySnapshot = await getDocs(q);
+    const sessionMsgs = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     res.json(sessionMsgs);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch messages" });
@@ -113,9 +93,9 @@ app.get('/api/messages/:sessionId', async (req, res) => {
 // Admin routes
 app.get('/api/admin/conversations', async (req, res) => {
   try {
-    // Basic implementation: get all unique sessions and calculate unread count
-    // A more complex query could do this in one go, but this is simpler for SQLite -> Postgres translation
-    const allMsgs = await db.select().from(messages).orderBy(desc(messages.timestamp));
+    const q = query(collection(db, 'messages'), orderBy('timestamp', 'desc'));
+    const querySnapshot = await getDocs(q);
+    const allMsgs = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() as any }));
     
     const sessionsMap = new Map();
     for (const msg of allMsgs) {
@@ -137,9 +117,14 @@ app.get('/api/admin/conversations', async (req, res) => {
 app.post('/api/admin/read/:sessionId', async (req, res) => {
   try {
     const { sessionId } = req.params;
-    await db.update(messages)
-      .set({ isRead: 1 })
-      .where(and(eq(messages.sessionId, sessionId), eq(messages.sender, 'buyer')));
+    const q = query(collection(db, 'messages'), where('sessionId', '==', sessionId), where('sender', '==', 'buyer'));
+    const querySnapshot = await getDocs(q);
+    
+    const updatePromises = querySnapshot.docs.map(docSnapshot => 
+      updateDoc(doc(db, 'messages', docSnapshot.id), { isRead: 1 })
+    );
+    await Promise.all(updatePromises);
+    
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: "Failed to mark as read" });
@@ -164,25 +149,23 @@ io.on('connection', (socket) => {
     const { sessionId, sender, content } = data;
     
     try {
-      // Save to database
-      const result = await db.insert(messages).values({
+      const msgData = {
         sessionId,
         sender,
-        content
-      }).returning();
-      
-      const savedMsg = result[0];
-      
-      const newMsg = {
-        id: savedMsg.id,
-        sessionId: savedMsg.sessionId,
-        sender: savedMsg.sender,
-        content: savedMsg.content,
-        timestamp: savedMsg.timestamp,
-        isRead: savedMsg.isRead
+        content,
+        timestamp: Date.now(),
+        isRead: 0
       };
       
-      // Broadcast to room (both sender and receiver will get this, sender can ignore or use it as confirmation)
+      // Save to database
+      const docRef = await addDoc(collection(db, 'messages'), msgData);
+      
+      const newMsg = {
+        id: docRef.id,
+        ...msgData
+      };
+      
+      // Broadcast to room
       io.to(sessionId).emit('new_message', newMsg);
       
       // If sender is buyer, notify admin room
@@ -220,3 +203,4 @@ async function startServer() {
 }
 
 startServer();
+
