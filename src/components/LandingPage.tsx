@@ -192,17 +192,57 @@ export default function LandingPage() {
             <p className="text-slate-600 mb-6 max-w-2xl mx-auto">
               Take a closer look at the exterior, interior, and engine bay in this comprehensive 3-minute walkaround video.
             </p>
-            <div className="w-full max-w-4xl mx-auto aspect-video rounded-xl overflow-hidden shadow-lg border border-slate-200 bg-slate-900">
-              <video 
-                key={truckDetails.videoUrl}
-                controls 
-                preload="none" 
-                poster={truckDetails.videoPosterUrl || "https://picsum.photos/seed/ramVideoPoster/1280/720"}
-                className="w-full h-full object-cover"
-              >
-                <source src={truckDetails.videoUrl || "https://www.w3schools.com/html/mov_bbb.mp4"} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+            <div className="w-full max-w-4xl mx-auto aspect-video rounded-xl overflow-hidden shadow-lg border border-slate-200 bg-slate-900 relative">
+              {(() => {
+                const url = truckDetails.videoUrl || "https://www.w3schools.com/html/mov_bbb.mp4";
+                let posterUrl = truckDetails.videoPosterUrl || "https://picsum.photos/seed/ramVideoPoster/1280/720";
+                
+                if (posterUrl.includes('imgur.com') && !posterUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+                  const imgurMatch = posterUrl.match(/imgur\.com\/([a-zA-Z0-9]+)/);
+                  if (imgurMatch && imgurMatch[1] !== 'a' && imgurMatch[1] !== 'gallery') {
+                     posterUrl = `https://i.imgur.com/${imgurMatch[1]}.jpg`;
+                  }
+                }
+                
+                const ytMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+                if (ytMatch) {
+                  return (
+                    <iframe
+                      src={`https://www.youtube.com/embed/${ytMatch[1]}`}
+                      className="absolute top-0 left-0 w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      loading="lazy"
+                    ></iframe>
+                  );
+                }
+                
+                const vimeoMatch = url.match(/vimeo\.com\/(?:.*#|.*\/videos\/)?([0-9]+)/);
+                if (vimeoMatch) {
+                  return (
+                    <iframe
+                      src={`https://player.vimeo.com/video/${vimeoMatch[1]}`}
+                      className="absolute top-0 left-0 w-full h-full"
+                      allow="autoplay; fullscreen; picture-in-picture"
+                      allowFullScreen
+                      loading="lazy"
+                    ></iframe>
+                  );
+                }
+                
+                return (
+                  <video 
+                    key={url}
+                    controls 
+                    preload="none" 
+                    poster={posterUrl}
+                    className="w-full h-full object-cover"
+                  >
+                    <source src={url} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                );
+              })()}
             </div>
           </div>
         </section>
