@@ -152,6 +152,12 @@ export default function LandingPage() {
               <h1 className="text-4xl md:text-5xl font-bold text-slate-900 leading-tight">
                 Premium Utility meets <br /><span className="text-red-600">Night Edition</span> Rarity
               </h1>
+              
+              <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-lg inline-block w-max">
+                <p className="text-slate-400 text-sm font-semibold uppercase tracking-wider mb-1">Asking Price</p>
+                <p className="text-4xl md:text-5xl font-bold text-white">${truckDetails.price}</p>
+              </div>
+
               <p className="text-sm text-slate-500 leading-relaxed max-w-lg">
                 A meticulously maintained 2017 Ram 1500 Crew Cab, featuring the iconic blacked-out Night Edition styling and over $4,000 in recent preventative mechanical upgrades.
               </p>
@@ -304,6 +310,17 @@ export default function LandingPage() {
                         <p>Additionally, this truck was just evaluated by a major commercial truck buying center. It was thoroughly test-driven and throws ZERO diagnostic codes.</p>
                       </>
                     )}
+                    <div className="mt-6 grid grid-cols-3 gap-2">
+                      <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden border border-slate-300">
+                        <img src="https://picsum.photos/seed/peace1/400/300" alt="Placeholder 1" className="w-full h-full object-cover opacity-60 mix-blend-multiply" />
+                      </div>
+                      <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden border border-slate-300">
+                        <img src="https://picsum.photos/seed/peace2/400/300" alt="Placeholder 2" className="w-full h-full object-cover opacity-60 mix-blend-multiply" />
+                      </div>
+                      <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden border border-slate-300">
+                        <img src="https://picsum.photos/seed/peace3/400/300" alt="Placeholder 3" className="w-full h-full object-cover opacity-60 mix-blend-multiply" />
+                      </div>
+                    </div>
                   </div>
 
                   {/* Recent Maintenance */}
@@ -327,6 +344,17 @@ export default function LandingPage() {
                         </ul>
                       </>
                     )}
+                    <div className="mt-6 grid grid-cols-3 gap-2">
+                      <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden border border-slate-300">
+                        <img src="https://picsum.photos/seed/maint1/400/300" alt="Placeholder 1" className="w-full h-full object-cover opacity-60 mix-blend-multiply" />
+                      </div>
+                      <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden border border-slate-300">
+                        <img src="https://picsum.photos/seed/maint2/400/300" alt="Placeholder 2" className="w-full h-full object-cover opacity-60 mix-blend-multiply" />
+                      </div>
+                      <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden border border-slate-300">
+                        <img src="https://picsum.photos/seed/maint3/400/300" alt="Placeholder 3" className="w-full h-full object-cover opacity-60 mix-blend-multiply" />
+                      </div>
+                    </div>
                   </div>
 
                   {/* Utility & Towing */}
@@ -350,6 +378,17 @@ export default function LandingPage() {
                         </ul>
                       </>
                     )}
+                    <div className="mt-6 grid grid-cols-3 gap-2">
+                      <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden border border-slate-300">
+                        <img src="https://picsum.photos/seed/util1/400/300" alt="Placeholder 1" className="w-full h-full object-cover opacity-60 mix-blend-multiply" />
+                      </div>
+                      <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden border border-slate-300">
+                        <img src="https://picsum.photos/seed/util2/400/300" alt="Placeholder 2" className="w-full h-full object-cover opacity-60 mix-blend-multiply" />
+                      </div>
+                      <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden border border-slate-300">
+                        <img src="https://picsum.photos/seed/util3/400/300" alt="Placeholder 3" className="w-full h-full object-cover opacity-60 mix-blend-multiply" />
+                      </div>
+                    </div>
                   </div>
 
                   {/* Luxury Options */}
@@ -373,6 +412,17 @@ export default function LandingPage() {
                         </ul>
                       </>
                     )}
+                    <div className="mt-6 grid grid-cols-3 gap-2">
+                      <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden border border-slate-300">
+                        <img src="https://picsum.photos/seed/lux1/400/300" alt="Placeholder 1" className="w-full h-full object-cover opacity-60 mix-blend-multiply" />
+                      </div>
+                      <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden border border-slate-300">
+                        <img src="https://picsum.photos/seed/lux2/400/300" alt="Placeholder 2" className="w-full h-full object-cover opacity-60 mix-blend-multiply" />
+                      </div>
+                      <div className="aspect-video bg-slate-200 rounded-lg overflow-hidden border border-slate-300">
+                        <img src="https://picsum.photos/seed/lux3/400/300" alt="Placeholder 3" className="w-full h-full object-cover opacity-60 mix-blend-multiply" />
+                      </div>
+                    </div>
                   </div>
                 </div>
 
