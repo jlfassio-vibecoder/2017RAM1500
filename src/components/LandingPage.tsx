@@ -194,6 +194,7 @@ export default function LandingPage() {
             </p>
             <div className="w-full max-w-4xl mx-auto aspect-video rounded-xl overflow-hidden shadow-lg border border-slate-200 bg-slate-900">
               <video 
+                key={truckDetails.videoUrl}
                 controls 
                 preload="none" 
                 poster={truckDetails.videoPosterUrl || "https://picsum.photos/seed/ramVideoPoster/1280/720"}
